@@ -1,0 +1,20 @@
+{
+  "name": "FaBCardSearch",
+  "version": "1.0.0",
+  "dependencies": {
+    "@flesh-and-blood/types": "^2.1.30",
+    "puppeteer": "^22.12.1"
+  },
+  "scripts": {
+    "start": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "backend": "ts-node backend/index.ts",
+    "frontend": "cd frontend && npm start"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.14.10",
+    "express": "^4.19.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.3"
+  }
+}

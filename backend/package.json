@@ -1,0 +1,19 @@
+{
+  "name": "FaBCardSearchBackend",
+  "version": "1.0.0",
+  "description": "Endpoint for FaBCardSearch",
+  "main": "index.ts/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Penelope Schankula",
+  "license": "ISC",
+  "dependencies": {
+    "@flesh-and-blood/cards": "^2.1.30",
+    "@flesh-and-blood/types": "^2.1.30",
+    "@flesh-and-blood/search": "^2.1.30",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "puppeteer": "^22.12.1"
+  }
+}

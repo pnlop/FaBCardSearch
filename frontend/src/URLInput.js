@@ -1,0 +1,50 @@
+// src/URLInput.js
+import React, { useState } from 'react';
+
+// Helper function to validate URLs
+const isValidURL = (string) => {
+    try {
+        new URL(string);
+        return true;
+    } catch (e) {
+        return false;
+    }
+};
+
+const URLInput = ({ url, urls, setUrl, addUrl, error, setError}) => {
+    const handleChange = (e) => {
+        setUrl(e.target.value);
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (isValidURL(url)) {
+            addUrl(url);
+            setUrl('');
+        } else {
+            setError('Please enter a valid URL.');
+        }
+    };
+
+    return (
+        <div>
+            <form onSubmit={handleSubmit}>
+                <input
+                    type="text"
+                    value={url}
+                    onChange={handleChange}
+                    placeholder="Enter a URL"
+                />
+                <button type="submit">Add URL</button>
+            </form>
+            {error && <p style={{ color: 'red' }}>{error}</p>}
+            <ul>
+                {urls.map((url, index) => (
+                    <li key={index}><a href={url} target="_blank" rel="noopener noreferrer">{url}</a></li>
+                ))}
+            </ul>
+        </div>
+    );
+};
+
+export default URLInput;
