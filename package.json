@@ -7,7 +7,7 @@
   },
   "scripts": {
     "start": "concurrently \"npm run backend\" \"npm run frontend\"",
-    "backend": "ts-node backend/index.ts",
+    "backend": "node backend/index.js",
     "frontend": "cd frontend && npm start"
   },
   "devDependencies": {

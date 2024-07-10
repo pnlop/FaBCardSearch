@@ -1,5 +1,6 @@
 // src/URLInput.js
 import React, { useState } from 'react';
+import './URLInput.css';
 
 // Helper function to validate URLs
 const isValidURL = (string) => {
@@ -11,7 +12,7 @@ const isValidURL = (string) => {
     }
 };
 
-const URLInput = ({ url, urls, setUrl, addUrl, error, setError}) => {
+const URLInput = ({ url, urls, setUrls, setUrl, addUrl, error, setError}) => {
     const handleChange = (e) => {
         setUrl(e.target.value);
     };
@@ -24,6 +25,11 @@ const URLInput = ({ url, urls, setUrl, addUrl, error, setError}) => {
         } else {
             setError('Please enter a valid URL.');
         }
+    };
+
+    const removeItem = (index) => {
+        setUrl('');
+        setUrls(urls.filter((_, i) => i !== index));
     };
 
     return (
@@ -40,7 +46,7 @@ const URLInput = ({ url, urls, setUrl, addUrl, error, setError}) => {
             {error && <p style={{ color: 'red' }}>{error}</p>}
             <ul>
                 {urls.map((url, index) => (
-                    <li key={index}><a href={url} target="_blank" rel="noopener noreferrer">{url}</a></li>
+                    <li key={index}><button className="remove" onClick={() => removeItem(index)}>remove</button><a href={url} target="_blank" rel="noopener noreferrer">{url}</a></li>
                 ))}
             </ul>
         </div>

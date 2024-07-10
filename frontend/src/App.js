@@ -75,16 +75,22 @@ function App() {
     return (
         <div className="App">
             {pageview === 0 && (<div className="search-view">
+                <div className="store-adder">
+                    <h2>Enter Store URL</h2>
+                <URLInput url={url}
+                          urls={urls}
+                          setUrls={setUrls}
+                          setUrl={setUrl}
+                          addUrl={addUrl}
+                          error={error}
+                          setError={setError}/>
+                </div>
+                <div className="header">
                 <div className="search-bar">
-                    <URLInput url={url}
-                              urls={urls}
-                              setUrl={setUrl}
-                              addUrl={addUrl}
-                              error={error}
-                              setError={setError}/>
+                    <h1 className="title">Card Shark</h1>
                     <SearchBar onSearch={handleSearch}/>
                 </div>
-                <h1>Search Results</h1>
+                </div>
                 <div className="search-results">
                     {cards.searchResults?.map((card) => (
                         <div className="card-info">

@@ -1,5 +1,11 @@
 .App {
     text-align: center;
+    display: flex;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f4f4f9;
+    flex-direction: column;
+
 }
 
 .App-logo {
@@ -26,6 +32,46 @@
 
 .App-link {
     color: #61dafb;
+}
+.search-results {
+    display: grid;
+    align-items: center;
+    grid-template-columns: repeat(auto-fit, 15rem);
+    gap: 4rem;
+    width: 100%;
+    max-width: 120rem;
+}
+
+.search-bar {
+    padding: 0.5rem;
+    font-size: 1rem;
+    width: 100%; /* Optional: Make the search bar full width within its container */
+    max-width: 400px; /* Optional: Set a maximum width */
+}
+
+.store-adder {
+    padding: 8px;
+    font-size: 16px;
+    border: 0.065rem solid #ccc;
+    border-radius: 0.25rem;
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 20%;
+}
+
+.header {
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: flex-start; /* Align items at the top */
+    padding: 1rem;
+    margin-top: 5rem; /* Adjust this value to control vertical position */
+    background-color: #f4f4f9;
+}
+
+.title {
+    font-size: 5rem;
+    margin: 10%;
 }
 
 @keyframes App-logo-spin {
