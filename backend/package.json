@@ -10,10 +10,11 @@
   "license": "ISC",
   "dependencies": {
     "@flesh-and-blood/cards": "^2.1.30",
-    "@flesh-and-blood/types": "^2.1.30",
     "@flesh-and-blood/search": "^2.1.30",
+    "@flesh-and-blood/types": "^2.1.30",
     "cors": "^2.8.5",
+    "cypress": "^13.13.0",
     "express": "^4.19.2",
-    "puppeteer": "^22.12.1"
+    "tsc": "^2.0.4"
   }
 }

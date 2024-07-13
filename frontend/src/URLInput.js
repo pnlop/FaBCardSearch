@@ -1,5 +1,4 @@
 // src/URLInput.js
-import React, { useState } from 'react';
 import './URLInput.css';
 
 // Helper function to validate URLs

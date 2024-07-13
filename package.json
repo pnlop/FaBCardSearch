@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "dependencies": {
     "@flesh-and-blood/types": "^2.1.30",
+    "concurrently": "^8.2.2",
     "puppeteer": "^22.12.1"
   },
   "scripts": {

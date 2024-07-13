@@ -4,7 +4,7 @@ import Search, {SearchCard} from "@flesh-and-blood/search";
 import {DoubleSidedCard} from "@flesh-and-blood/types";
 import {cards} from "@flesh-and-blood/cards";
 import bodyParser from "body-parser";
-import puppeteer from "puppeteer";
+import "cypress";
 
 const app = express();
 app.use(bodyParser.json());
@@ -49,33 +49,49 @@ app.post('/searchListings', (req, res) => {
     console.log(cardData);
     console.log(storeUrls);
     scrapeListings(cardData, storeUrls).then((listings) => {
-        res.send(JSON.stringify(listings));
+        res.send(JSON.stringify(listings))
     });
 });
 
-async function scrapeListings(card: SearchCard, storeUrls: string[]){
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    let listings: { [storeUrl: string]: { products: any[] } } = {};
-    for (let i = 0; i < storeUrls.length; i++) {
-        await page.goto(storeUrls[i]);
-        let products = await page.evaluate(() => {
-            const productElements = document.querySelectorAll('.product-grid-item');
-            const productData = [];
-            productElements.forEach(product => {
-                //if the product title includes any of the strings in the array set identifiers
-                if (card.setIdentifiers.some(setIdentifier => product.querySelector('.product-title').textContent.includes(setIdentifier))) {
-                    const title = product.querySelector('.product-title').textContent;
-                    const url = product.querySelector('a').href;
-                    //const imageUrl = product.querySelector('img').src;
-                    const price = product.querySelector('.price').textContent;
-                    productData.push({title, url, price});
-                }
+// Define your Cypress test
+//turn this into async function with promise return
+async function scrapeListings(cardData: SearchCard, storeUrls: string[]): Promise<any[]> {
+    let results = [];
+    for (const storeUrl of storeUrls) {
+        let storeResults = [];
+        describe('Listing scraper', () => {
+            it('Should search for a card', () => {
+            // Visit the webpage containing the search bar
+            cy.visit(storeUrl);
+            // Find the search input element and type a search term
+            cy.get('input[type="search"]').type(cardData.cardIdentifier)
+            .then(() => {
+                // Find the submit button (if any) and click it to perform the search
+                cy.get('button[type="submit"]').click();
+                // Assert that the search results are displayed or verify the expected behavior
+                cy.get('.list-view-items').as('listings').then(() => {
+                    cy.get('div[id*="ProductCardList2"][hidden]').each((listing) => {
+                        if (cy.wrap(listing).prev('div').children().contains('sold-out')) {
+                            console.log('Sold out');
+                        } else {
+                            cy.wrap(listing).get('.data-product-variants').invoke('text').then(($variants) => {
+                                //TODO: fix url find
+                                //Note: URL is only encoded for first sublisting
+                                //change structure of listing return?
+                                //Store[StoreURL]{Listing[ListingURL]{Sublistings[Price]}}
+                                let listingUrl = cy.wrap(listing).prev('div').children().get('a').invoke('attr', 'href');
+                                let sublistings = JSON.parse($variants);
+                                console.log(sublistings);
+                                storeResults.push({url: listingUrl, variants: sublistings});
+                            });
+                        }
+                    });
+                });
             });
-            return productData;
+            });
         });
-        listings[storeUrls[i]] = {products: products};
+        results.push({storeUrl, storeResults});
     }
-    await browser.close();
-    return listings;
+
+    return results;
 }
