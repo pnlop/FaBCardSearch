@@ -5,6 +5,7 @@ import {DoubleSidedCard} from "@flesh-and-blood/types";
 import {cards} from "@flesh-and-blood/cards";
 import bodyParser from "body-parser";
 import cypress from "cypress";
+import { readFile } from "fs";
 
 const app = express();
 app.use(bodyParser.json());
@@ -54,12 +55,18 @@ app.post('/searchListings', (req, res) => {
         headless: false,      // Optional: Run headlessly (default is true));
         env: {
             cardData: cardData,
-            storeUrls: storeUrls,
-            listingData: []
+            storeUrls: storeUrls
         }
-      }).then((results) => {
-        console.log(results);
-        res.send(JSON.stringify(results));
+      }).then(() => {
+        //read .json file called saleInfo.json and send its contents
+        readFile(__dirname+'/saleInfo.json', 'utf8', (err, data) => {
+            if (err) {
+                console.error(err);
+                return;
+            }
+            res.contentType('application/json');
+            res.send(data);
+        });
         });
     
 });

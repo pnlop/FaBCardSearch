@@ -9,6 +9,7 @@ const search_1 = __importDefault(require("@flesh-and-blood/search"));
 const cards_1 = require("@flesh-and-blood/cards");
 const body_parser_1 = __importDefault(require("body-parser"));
 const cypress_1 = __importDefault(require("cypress"));
+const fs_1 = require("fs");
 const app = (0, express_1.default)();
 app.use(body_parser_1.default.json());
 app.use((0, cors_1.default)());
@@ -41,18 +42,24 @@ app.post('/searchListings', (req, res) => {
     const storeUrls = requestData.storeUrls;
     console.log(cardData);
     console.log(storeUrls);
-    cypress_1.default.run({
+    let runResult = cypress_1.default.run({
         spec: 'cypress/e2e/cardsearch.cy.js', // Path to your test file
         browser: 'chrome', // Optional: Specify browser (default is Electron)
         headless: false, // Optional: Run headlessly (default is true));
         env: {
             cardData: cardData,
-            storeUrls: storeUrls,
-            listingData: []
+            storeUrls: storeUrls
         }
-    }).then((results) => {
-        console.log(results);
-        res.send(JSON.stringify(results));
+    }).then(() => {
+        //read .json file called saleInfo.json and send its contents
+        (0, fs_1.readFile)(__dirname + '/saleInfo.json', 'utf8', (err, data) => {
+            if (err) {
+                console.error(err);
+                return;
+            }
+            res.contentType('application/json');
+            res.send(data);
+        });
     });
 });
 app.post('/scrapeReturn', (req, res) => {

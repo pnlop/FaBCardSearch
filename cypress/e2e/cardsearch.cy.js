@@ -26,7 +26,7 @@ it('Search for card listings', () => {
             skipNext = false;
         }
     }).then(() => {
-        cy.writeFile('cypress/fixtures/saleInfo.json', saleInfo);
+        cy.writeFile('backend/saleInfo.json', saleInfo);
     });
 
 });
