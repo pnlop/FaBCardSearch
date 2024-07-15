@@ -4,7 +4,7 @@ import Search, {SearchCard} from "@flesh-and-blood/search";
 import {DoubleSidedCard} from "@flesh-and-blood/types";
 import {cards} from "@flesh-and-blood/cards";
 import bodyParser from "body-parser";
-import "cypress";
+import cypress from "cypress";
 
 const app = express();
 app.use(bodyParser.json());
@@ -48,50 +48,23 @@ app.post('/searchListings', (req, res) => {
     const storeUrls = requestData.storeUrls;
     console.log(cardData);
     console.log(storeUrls);
-    scrapeListings(cardData, storeUrls).then((listings) => {
-        res.send(JSON.stringify(listings))
-    });
+    let runResult = cypress.run({
+        spec: 'cypress/e2e/cardsearch.cy.js', // Path to your test file
+        browser: 'chrome',  // Optional: Specify browser (default is Electron)
+        headless: false,      // Optional: Run headlessly (default is true));
+        env: {
+            cardData: cardData,
+            storeUrls: storeUrls,
+            listingData: []
+        }
+      }).then((results) => {
+        console.log(results);
+        res.send(JSON.stringify(results));
+        });
+    
 });
 
-// Define your Cypress test
-//turn this into async function with promise return
-async function scrapeListings(cardData: SearchCard, storeUrls: string[]): Promise<any[]> {
-    let results = [];
-    for (const storeUrl of storeUrls) {
-        let storeResults = [];
-        describe('Listing scraper', () => {
-            it('Should search for a card', () => {
-            // Visit the webpage containing the search bar
-            cy.visit(storeUrl);
-            // Find the search input element and type a search term
-            cy.get('input[type="search"]').type(cardData.cardIdentifier)
-            .then(() => {
-                // Find the submit button (if any) and click it to perform the search
-                cy.get('button[type="submit"]').click();
-                // Assert that the search results are displayed or verify the expected behavior
-                cy.get('.list-view-items').as('listings').then(() => {
-                    cy.get('div[id*="ProductCardList2"][hidden]').each((listing) => {
-                        if (cy.wrap(listing).prev('div').children().contains('sold-out')) {
-                            console.log('Sold out');
-                        } else {
-                            cy.wrap(listing).get('.data-product-variants').invoke('text').then(($variants) => {
-                                //TODO: fix url find
-                                //Note: URL is only encoded for first sublisting
-                                //change structure of listing return?
-                                //Store[StoreURL]{Listing[ListingURL]{Sublistings[Price]}}
-                                let listingUrl = cy.wrap(listing).prev('div').children().get('a').invoke('attr', 'href');
-                                let sublistings = JSON.parse($variants);
-                                console.log(sublistings);
-                                storeResults.push({url: listingUrl, variants: sublistings});
-                            });
-                        }
-                    });
-                });
-            });
-            });
-        });
-        results.push({storeUrl, storeResults});
-    }
+app.post('/scrapeReturn', (req, res) => {
+    res.send(req.body);
+});
 
-    return results;
-}

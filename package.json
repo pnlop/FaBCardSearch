@@ -2,9 +2,8 @@
   "name": "FaBCardSearch",
   "version": "1.0.0",
   "dependencies": {
-    "@flesh-and-blood/types": "^2.1.30",
     "concurrently": "^8.2.2",
-    "puppeteer": "^22.12.1"
+    "cypress": "^13.13.0"
   },
   "scripts": {
     "start": "concurrently \"npm run backend\" \"npm run frontend\"",

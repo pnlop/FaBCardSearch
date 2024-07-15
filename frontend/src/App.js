@@ -101,6 +101,7 @@ function App() {
                                 className="clickable-image"
                                 onClick={() => handleImageClick(urls, card)}
                             />
+                            <h3>{card.name}</h3>
                         </div>
                     ))}
                 </div>

@@ -1,7 +1,7 @@
 // src/ListingTable.js
 import React from 'react';
 
-const ListingTable = (listings: { [store: string]: { products: any[] } }) => {
+const ListingTable = (listings) => {
     return (
         <div>
             {Object.keys(listings).map((store, storeIndex) => (
