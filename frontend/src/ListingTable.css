@@ -1,5 +1,8 @@
 table, th, td{
-    width: 100%;
+    width: 80%;
     border-collapse: collapse;
+    padding: auto;
+    margin: 10%;
+    margin-top: 0;
     border: 0.15rem solid black;
 }

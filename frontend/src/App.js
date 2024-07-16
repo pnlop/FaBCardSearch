@@ -75,6 +75,7 @@ function App() {
     return (
         <div className="App">
             {pageview === 0 && (<div className="search-view">
+                <button hidden={listingsData.length === 0} onClick={() => setPageview(1)}>Return to Listings</button>
                 <div className="store-adder">
                     <h2>Enter Store URL</h2>
                 <URLInput url={url}
@@ -108,7 +109,7 @@ function App() {
             </div>)}
 
             {pageview === 1 && (<div className="listing-view">
-                <button onClick={() => setPageview(0)}>Back</button>
+                <button onClick={() => setPageview(0)}>Return to Search</button>
                 <ListingTableView listings={listingsData}/>
             </div>)}
         </div>
