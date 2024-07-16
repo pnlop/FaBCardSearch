@@ -6,13 +6,15 @@ describe('Search for card listings', () => {
 function scrapeSite(urls) {
     const saleInfo =[];
     after(() => {
-        cy.writeFile('backend/saleInfo.json', saleInfo);
+        cy.task('getStoreData').then((storeData) => {
+            cy.writeFile('/backend/saleInfo.json', storeData);
+        });
     });
     for (const url in urls) {
-        it('Scrape site', () => {
+        it('Scrape site: '+url, () => {
             cy.intercept('GET', '/cart.js').as('load');
             cy.visit(urls[url]).then(() => {
-                saleInfo.push(urls[url])
+                cy.task('setStoreData', {url: urls[url]});
             });
             cy.wait('@load');
             cy.wait(1000);
@@ -25,10 +27,11 @@ function scrapeSite(urls) {
             cy.get('.list-view-items').should('exist').children().each(($item, index, $list) => {
                 if ($item.html().length === 0) {
                     cy.wrap($item).invoke('attr', 'data-product-variants').then((variants) => {
-                        saleInfo.push(JSON.parse(variants));
+                        cy.task('setStoreData', JSON.parse(variants));
                     });
                 }
             });
         });
     }
+
 }
