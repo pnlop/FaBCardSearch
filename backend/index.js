@@ -45,7 +45,7 @@ app.post('/searchListings', (req, res) => {
     let runResult = cypress_1.default.run({
         spec: 'cypress/e2e/cardsearch.cy.js', // Path to your test file
         browser: 'chrome', // Optional: Specify browser (default is Electron)
-        headless: false, // Optional: Run headlessly (default is true));
+        headless: true, // Optional: Run headlessly (default is true));
         env: {
             cardData: cardData,
             storeUrls: storeUrls,
