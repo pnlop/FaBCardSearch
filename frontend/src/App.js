@@ -2,8 +2,8 @@ import './App.css';
 import {useState} from "react";
 import {SearchCard, SearchResults} from "@flesh-and-blood/search";
 import SearchBar from "./SearchBar";
-import ListingTable from "./ListingTable";
 import URLInput from "./URLInput";
+import ListingTableView from './ListingTableView';
 
 function App() {
     const [cards: SearchResults, setCards] = useState([]);
@@ -109,7 +109,7 @@ function App() {
 
             {pageview === 1 && (<div className="listing-view">
                 <button onClick={() => setPageview(0)}>Back</button>
-                <ListingTable listings={listingsData}/>
+                <ListingTableView listings={listingsData}/>
             </div>)}
         </div>
     );
