@@ -7,15 +7,13 @@ function scrapeSite(urls) {
     const saleInfo =[];
     after(() => {
         cy.task('getStoreData').then((storeData) => {
-            cy.writeFile('/backend/saleInfo.json', storeData);
+            cy.writeFile('backend/saleInfo.json', storeData);
         });
     });
     for (const url in urls) {
         it('Scrape site: '+url, () => {
             cy.intercept('GET', '/cart.js').as('load');
-            cy.visit(urls[url]).then(() => {
-                cy.task('setStoreData', {url: urls[url]});
-            });
+            cy.visit(urls[url]);
             cy.wait('@load');
             cy.wait(1000);
             cy.get('form[action="/search"][method="get"][class*="search-header"]').should('exist').first().within(() => {
@@ -27,9 +25,15 @@ function scrapeSite(urls) {
             cy.get('.list-view-items').should('exist').children().each(($item, index, $list) => {
                 if ($item.html().length === 0) {
                     cy.wrap($item).invoke('attr', 'data-product-variants').then((variants) => {
-                        cy.task('setStoreData', JSON.parse(variants));
+                        cy.task('setListingData', JSON.parse(variants));
                     });
                 }
+            }).then(() => {
+                cy.task('getListingData').then((listingData) => {
+                    let storeData = {url: urls[url], listings: listingData};
+                    cy.task('setStoreData', storeData);
+                });
+                cy.task('resetListingData');
             });
         });
     }

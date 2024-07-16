@@ -1,5 +1,6 @@
 import { defineConfig } from "cypress";
 let storeData : any[] = [];
+let listingsData : any[] = [];
 
 export default defineConfig({
   e2e: {
@@ -10,6 +11,16 @@ export default defineConfig({
         },
         getStoreData: () => {
           return storeData;
+        },
+        setListingData: (listingData) => {
+          return listingsData.push(listingData);
+        },
+        getListingData: () => {
+          return listingsData;
+        },
+        resetListingData: () => {
+          listingsData = [];
+          return null;
         },
       })
     },
