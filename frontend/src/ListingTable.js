@@ -2,35 +2,31 @@
 import React from 'react';
 
 const ListingTable = (listings) => {
+    console.log(listings);
     return (
         <div>
-            {Object.keys(listings).map((store, storeIndex) => (
-                <div key={storeIndex}>
-                    <h2>{store}</h2>
-                    <table>
-                        <thead>
-                        <tr>
-                            <th>Product Name</th>
-                            <th>Price</th>
-                            <th>Link</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {listings[store].products?.map((product, productIndex) => (
-                            <tr key={productIndex}>
-                                <td>{product.title}</td>
-                                <td>{product.price}</td>
-                                <td>
-                                    <a href={product.url} target="_blank" rel="noopener noreferrer">
-                                        View Product
-                                    </a>
-                                </td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
-                </div>
-            ))}
+            <table>
+                <thead>
+                <tr>
+                    <th>Card</th>
+                    <th>Price</th>
+                    <th>Condition</th>
+                    <th>Available</th>
+                </tr>
+                </thead>
+                <tbody>
+                {listings.listings.map((listing) => (listing.map((sublisting) => (
+                    <tr hidden={!sublisting.available}>
+                        <td>{sublisting.name}</td>
+                        <td>{sublisting.price / 100}</td>
+                        <td>{sublisting.title}</td>
+                        <td>{sublisting.available.toString()}</td>
+                    </tr>
+                ))))
+            }
+                </tbody>
+            </table>
+            
         </div>
     );
 };
