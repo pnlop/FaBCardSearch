@@ -55,7 +55,8 @@ app.post('/searchListings', (req, res) => {
         headless: false,      // Optional: Run headlessly (default is true));
         env: {
             cardData: cardData,
-            storeUrls: storeUrls
+            storeUrls: storeUrls,
+            listingData: []
         }
       }).then(() => {
         //read .json file called saleInfo.json and send its contents
