@@ -1,30 +1,41 @@
-import React, {useState} from 'react';
-import './SearchBar.css';
-const SearchBar = ({onSearch}) => {
-    const [query, setQuery] = useState('');
+import { Button, Center, TextInput } from "@mantine/core";
+import React, { useState } from "react";
+const SearchBar = ({ onSearch, loading }) => {
+  const [query, setQuery] = useState("");
 
-    const handleInputChange = (event) => {
-        setQuery(event.target.value);
-    };
+  const handleInputChange = (event) => {
+    setQuery(event.target.value);
+  };
 
-    const handleSearch = () => {
-        onSearch(query);
-    };
+  const handleSearch = () => {
+    onSearch(query);
+  };
 
-    return (
-        <div className="wrap">
-            <div className="search">
-                <input
-                    type="text"
-                    value={query}
-                    onChange={handleInputChange}
-                    placeholder="Search FaB Card..."
-                    className="searchTerm"
-                />
-                <button onClick={handleSearch} className="searchButton">Search</button>
-            </div>
-        </div>
-    );
+  return (
+    <Center>
+      <TextInput
+        type="text"
+        value={query}
+        w={300}
+        onChange={handleInputChange}
+        placeholder="Search FaB Card..."
+        className="searchTerm"
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            handleSearch();
+          }
+        }}
+      />
+      <Button
+        type="submit"
+        className="searchButton"
+        onClick={handleSearch}
+        disabled={loading}
+      >
+        {loading ? "Loading..." : "Search"}
+      </Button>
+    </Center>
+  );
 };
 
 export default SearchBar;

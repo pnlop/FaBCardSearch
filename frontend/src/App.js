@@ -1,119 +1,195 @@
-import './App.css';
-import {useState} from "react";
-import {SearchCard, SearchResults} from "@flesh-and-blood/search";
+import {
+  ActionIcon,
+  AppShell,
+  Box,
+  Burger,
+  Card,
+  Center,
+  Container,
+  Flex,
+  Grid,
+  Image,
+  Text,
+  Title,
+} from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import { IconArrowLeft } from "@tabler/icons-react";
+import { useState } from "react";
+import ListingTableView from "./ListingTableView";
 import SearchBar from "./SearchBar";
 import URLInput from "./URLInput";
-import ListingTableView from './ListingTableView';
 
 function App() {
-    const [cards: SearchResults, setCards] = useState([]);
-    const [pageview, setPageview] = useState(0);
-    const [listingsData, setListings] = useState([]);
-    const [url, setUrl] = useState('');
-    const [urls, setUrls] = useState([]);
-    const [error, setError] = useState('');
-    const LSSImageURL = "https://d2wlb52bya4y8z.cloudfront.net/media/cards/small/";
-    const webpURLSuffix = ".webp";
-    const backendURL = "http://localhost:5000";
-    const handleImageClick = async (cardData: SearchCard, storeUrls: string[]) => {
-        try {
-            const listingRequest = {storeUrls: cardData, cardData: storeUrls};
-            fetch(backendURL + '/searchListings', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'Access-Control-Allow-Origin': '*',
-                },
-                body: JSON.stringify(listingRequest),
-            })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Success:', data);
-                    // Update the state with the new data if needed
-                    // setImages(updatedImages);
-                    setPageview(1)
-                    setListings(data)
-                })
+  const [cards, setCards] = useState([]);
+  const [pageview, setPageview] = useState(false);
+  const [listingsData, setListings] = useState([]);
+  const [url, setUrl] = useState("");
+  const [urls, setUrls] = useState([]);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [scraping, setScraping] = useState(false);
+  const [mobileOpened, { toggle: toggleMobile }] = useDisclosure(false);
+  const LSSImageURL =
+    "https://d2wlb52bya4y8z.cloudfront.net/media/cards/small/";
+  const webpURLSuffix = ".webp";
+  const backendURL = "http://localhost:5000";
+  const handleImageClick = async (cardData, storeUrls) => {
+    try {
+      const listingRequest = { storeUrls: cardData, cardData: storeUrls };
+      setScraping(true);
+      fetch(backendURL + "/searchListings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify(listingRequest),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Success:", data);
+          // Update the state with the new data if needed
+          // setImages(updatedImages);
+          setPageview(1);
+          setListings(data);
+        })
+        .finally(() => {
+          setScraping(false);
+        });
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+  const handleSearch = async (query) => {
+    try {
+      setLoading(true);
+      const queryPayload = { query: query };
+      const queryJSON = JSON.stringify(queryPayload);
+      fetch(backendURL + "/searchCard", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: queryJSON,
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Success:", data);
+          setCards(data);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    };
-    const handleSearch = async (query: string) => {
-        try {
-            const queryPayload = {query: query};
-            const queryJSON = JSON.stringify(queryPayload);
-            fetch(backendURL+'/searchCard', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                },
-                body: queryJSON,
-            })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Success:', data);
-                    setCards(data);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
+  const addUrl = (newUrl) => {
+    setUrls([...urls, newUrl]);
+    setError("");
+  };
 
-
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    };
-
-    const addUrl = (newUrl) => {
-        setUrls([...urls, newUrl]);
-        setError('');
-    };
-
-    return (
-        <div className="App">
-            {pageview === 0 && (<div className="search-view">
-                <button hidden={listingsData.length === 0} onClick={() => setPageview(1)}>Return to Listings</button>
-                <div className="store-adder">
-                    <h2>Enter Store URL</h2>
-                <URLInput url={url}
-                          urls={urls}
-                          setUrls={setUrls}
-                          setUrl={setUrl}
-                          addUrl={addUrl}
-                          error={error}
-                          setError={setError}/>
-                </div>
-                <div className="header">
-                <div className="search-bar">
-                    <h1 className="title">Card Shark</h1>
-                    <SearchBar onSearch={handleSearch}/>
-                </div>
-                </div>
-                <div className="search-results">
+  return (
+    <AppShell
+      header={{ height: 100 }}
+      padding="md"
+      aside={{
+        width: 300,
+        justify: "center",
+        align: "center",
+        breakpoint: "lg",
+        collapsed: { desktop: !mobileOpened, mobile: !mobileOpened },
+      }}
+    >
+      <div className="App">
+        <AppShell.Header p={15}>
+          <ActionIcon
+            variant="subtle"
+            size="xl"
+            onClick={() => setPageview(!pageview)}
+          >
+            <IconArrowLeft stroke={2.5} />
+          </ActionIcon>
+          <Burger
+            onClick={toggleMobile}
+            pt={15}
+            style={{ position: "absolute", right: 15 }}
+          ></Burger>
+          <Center>
+            <Title order={1}>Card Shark</Title>
+          </Center>
+        </AppShell.Header>
+        <AppShell.Aside>
+          <Box align="center">
+            <URLInput
+              url={url}
+              urls={urls}
+              setUrls={setUrls}
+              setUrl={setUrl}
+              addUrl={addUrl}
+              error={error}
+              setError={setError}
+            />
+          </Box>
+        </AppShell.Aside>
+        <AppShell.Main>
+          <Container size="lg">
+            {!pageview && (
+              <Flex gap={"sm"} justify="center" overflow="hidden" p={25}>
+                <Flex align={"center"} direction="column" w="100%">
+                  <Center pb={40}>
+                    <SearchBar onSearch={handleSearch} loading={loading} />
+                  </Center>
+                  <Grid className="search-results">
                     {cards.searchResults?.map((card) => (
-                        <div className="card-info">
-                            <img
-                                key={card.cardIdentifier}
-                                src={LSSImageURL+card.defaultImage+webpURLSuffix}
-                                alt={card.name + "(" + card.cardIdentifier + ")"}
-                                className="clickable-image"
-                                onClick={() => handleImageClick(urls, card)}
+                      <Grid.Col className="card-info" span={"content"} p={25}>
+                        <Card
+                          onClick={() => handleImageClick(urls, card)}
+                          style={{ cursor: "pointer" }}
+                          p={25}
+                        >
+                          <Card.Section>
+                            <Image
+                              fit="contain"
+                              key={card.cardIdentifier}
+                              radius={"md"}
+                              src={
+                                LSSImageURL + card.defaultImage + webpURLSuffix
+                              }
+                              alt={card.name + "(" + card.cardIdentifier + ")"}
+                              className="card-image"
+                              fallbackSrc="https://placehold.co/175x250?text=No+Image"
                             />
-                            <h3>{card.name}</h3>
-                        </div>
+                          </Card.Section>
+                          <Card.Section>
+                            <Text align="center" size="md" pt={15}>
+                              {card.name}
+                            </Text>
+                          </Card.Section>
+                        </Card>
+                      </Grid.Col>
                     ))}
-                </div>
-            </div>)}
+                  </Grid>
+                </Flex>
+              </Flex>
+            )}
 
-            {pageview === 1 && (<div className="listing-view">
-                <button onClick={() => setPageview(0)}>Return to Search</button>
-                <ListingTableView listings={listingsData}/>
-            </div>)}
-        </div>
-    );
+            {pageview && (
+              <div className="listing-view">
+                <ListingTableView listings={listingsData} />
+              </div>
+            )}
+          </Container>
+        </AppShell.Main>
+      </div>
+    </AppShell>
+  );
 }
 
 export default App;
