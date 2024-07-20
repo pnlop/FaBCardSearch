@@ -1,0 +1,20 @@
+version: 1
+backend:
+  phases:
+    preBuild:
+      commands:
+        - cd backend
+        - npm ci
+    build:
+      commands:
+        - npm run backend
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - cd frontend
+        - npm ci
+    build:
+      commands:
+        - npm run frontend
+  
