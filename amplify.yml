@@ -7,7 +7,7 @@ backend:
         - npm ci
     build:
       commands:
-        - node backend/index.js
+        - node index.js
 frontend:
   phases:
     preBuild:
