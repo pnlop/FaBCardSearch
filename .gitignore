@@ -1,0 +1,7 @@
+node_modules
+*/saleInfo.json
+.DS_Store
+backend/saleInfo.json
+frontend/build
+frontend/build/index.html
+*/package-lock.json
