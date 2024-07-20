@@ -32,7 +32,7 @@ function App() {
   const LSSImageURL =
     "https://d2wlb52bya4y8z.cloudfront.net/media/cards/small/";
   const webpURLSuffix = ".webp";
-  const backendURL = "http://localhost:5000";
+  const backendURL = "http://192.46.223.110:3000";
   const handleImageClick = async (cardData, storeUrls) => {
     try {
       const listingRequest = { storeUrls: cardData, cardData: storeUrls };

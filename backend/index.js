@@ -13,8 +13,8 @@ const fs_1 = require("fs");
 const app = (0, express_1.default)();
 app.use(body_parser_1.default.json());
 app.use((0, cors_1.default)());
-app.listen(5000, () => {
-    console.log('Server running on port 5000');
+app.listen(3000, () => {
+    console.log('Server running on port 3000');
 });
 app.post('/searchCard', (req, res) => {
     console.log(req.body);
