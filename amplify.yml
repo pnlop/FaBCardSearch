@@ -7,7 +7,7 @@ backend:
         - npm ci
     build:
       commands:
-        - npm run backend
+        - node backend/index.js
 frontend:
   phases:
     preBuild:
@@ -16,7 +16,7 @@ frontend:
         - npm ci
     build:
       commands:
-        - npm run frontend
+        - npm build
   artifacts:
     baseDirectory: frontend/build
     files:
