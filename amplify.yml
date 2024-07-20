@@ -17,8 +17,8 @@ frontend:
     build:
       commands:
         - npm run frontend
-    artifacts:
-      baseDirectory: frontend/build
-      files:
-        - '**/*'
+  artifacts:
+    baseDirectory: frontend/build
+    files:
+      - '**/*'
   
