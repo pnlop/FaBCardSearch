@@ -9,7 +9,7 @@
   "scripts": {
     "start": "concurrently \"npm run backend\" \"npm run frontend\"",
     "backend": "node backend/index.js",
-    "frontend": "cd frontend && npm build"
+    "frontend": "cd frontend && npm run build"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
