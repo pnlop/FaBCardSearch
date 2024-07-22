@@ -1,5 +1,5 @@
 {
-  "name": "FaBCardSearchBackend",
+  "name": "backend",
   "version": "1.0.0",
   "description": "Endpoint for FaBCardSearch",
   "main": "index.ts/index.js",

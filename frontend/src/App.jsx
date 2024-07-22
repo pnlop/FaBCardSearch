@@ -29,6 +29,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [scraping, setScraping] = useState(false);
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure(false);
+
   const LSSImageURL =
     "https://d2wlb52bya4y8z.cloudfront.net/media/cards/small/";
   const webpURLSuffix = ".webp";
@@ -71,8 +72,8 @@ function App() {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-	'Access-Control-Allow-Origin':'*',
-                    'Access-Control-Allow-Methods':'POST,PATCH,OPTIONS',
+	          'Access-Control-Allow-Origin':'*',
+            'Access-Control-Allow-Methods':'POST,PATCH,OPTIONS',
         },
         body: queryJSON,
       })
@@ -149,6 +150,7 @@ function App() {
                     <SearchBar onSearch={handleSearch} loading={loading} />
                   </Center>
                   <Grid className="search-results">
+                  <LoadingOverlay visible={loading} zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} loaderProps={{ color: 'pink', type: 'bars' }}/>
                     {cards.searchResults?.map((card) => (
                       <Grid.Col className="card-info" span={"content"} p={25}>
                         <Card
@@ -184,6 +186,7 @@ function App() {
 
             {pageview && (
               <div className="listing-view">
+                <LoadingOverlay visible={scraping} zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} loaderProps={{ color: 'pink', type: 'bars' }}/>
                 <ListingTableView listings={listingsData} />
               </div>
             )}
