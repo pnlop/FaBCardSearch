@@ -16,7 +16,7 @@ app.use((0, cors_1.default)());
 app.listen(3000, () => {
     console.log('Server running on port 3000');
 });
-app.post('/searchCard', (req, res) => {
+app.post('/api/searchCard', (req, res) => {
     console.log(req.body);
     const searchQuery = req.body;
     //console.log(req);
@@ -36,7 +36,7 @@ app.post('/searchCard', (req, res) => {
     res.contentType('application/json');
     res.send(JSON.stringify(searchResults));
 });
-app.post('/searchListings', (req, res) => {
+app.post('/api/searchListings', (req, res) => {
     const requestData = req.body;
     const cardData = requestData.cardData;
     const storeUrls = requestData.storeUrls;
