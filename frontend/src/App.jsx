@@ -173,7 +173,7 @@ function App() {
                               key={card.cardIdentifier}
                               radius={"md"}
                               src={
-                                LSSImageURL + card.defaultImage + webpURLSuffix
+                                LSSImageURL + card.specialImage + webpURLSuffix
                               }
                               alt={card.name + "(" + card.cardIdentifier + ")"}
                               className="card-image"
