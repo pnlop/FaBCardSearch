@@ -33,7 +33,7 @@ function App() {
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure(false);
 
   const LSSImageURL =
-    "https://d2wlb52bya4y8z.cloudfront.net/media/cards/small/";
+    "https://d2h5owxb2ypf43.cloudfront.net/cards/";
   const webpURLSuffix = ".webp";
   const backendURL = "https://fabcardshark.com/api";
   const handleImageClick = async (cardData, storeUrls) => {
@@ -172,8 +172,9 @@ function App() {
                               fit="contain"
                               key={card.cardIdentifier}
                               radius={"md"}
+                              h={250}
                               src={
-                                LSSImageURL + card.specialImage + webpURLSuffix
+                                LSSImageURL + card.defaultImage + webpURLSuffix
                               }
                               alt={card.name + "(" + card.cardIdentifier + ")"}
                               className="card-image"
