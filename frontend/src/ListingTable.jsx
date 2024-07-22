@@ -4,10 +4,6 @@ import React from "react";
 import "./ListingTable.css";
 //turn listing table into dynamic table generator per store, iterate over stores/listings in wrapper component
 const ListingTable = (listing) => {
-  console.log(listing);
-  //listing: {url: string, listings: []}
-
-  console.log(listing);
   if (!listing) {
     return null;
   }

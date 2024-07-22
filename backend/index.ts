@@ -17,9 +17,7 @@ app.listen(3000, () => {
 });
 
 app.post('/api/searchCard', (req, res) => {
-    console.log(req.body);
     const searchQuery = req.body;
-    //console.log(req);
     //from @flesh-and-blood/search search.tests.ts
     const doubleSidedCards: DoubleSidedCard[] = cards.map((card) => {
         if (card.oppositeSideCardIdentifier) {
@@ -37,8 +35,6 @@ app.post('/api/searchCard', (req, res) => {
     const search = new Search(doubleSidedCards);
     const searchResults = search.search(searchQuery.query);
 
-    console.log(searchResults);
-
     res.contentType('application/json')
     res.send(JSON.stringify(searchResults, function(key, value) {
         if(key == 'oppositeSideCard') { 
@@ -54,8 +50,6 @@ app.post('/api/searchListings', (req, res) => {
     const requestData = req.body;
     const cardData = requestData.cardData;
     const storeUrls = requestData.storeUrls;
-    console.log(cardData);
-    console.log(storeUrls);
     let db = new loki("listinginfo.db");
     let listings = db.addCollection("listings");
     scrapeSite(storeUrls, cardData.cardIdentifier, listings).then(() => {
@@ -94,14 +88,11 @@ async function scrapeSite(urls, cardIdentifier, listings) {
                 return data;
             });
 
-            // Save data (you may adjust how you want to save this data)
             const storeData = {
                 url: url,
                 listings: listingData
             };
-            // You may need to adjust this part depending on how you handle saving data
-            console.log('Store data:', storeData);
-	    listings.insert(storeData);
+	        listings.insert(storeData);
         } catch (error) {
             console.error('Error scraping site:', url, error);
         }
