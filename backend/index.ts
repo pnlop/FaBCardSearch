@@ -4,7 +4,6 @@ import Search, { SearchCard } from "@flesh-and-blood/search";
 import { DoubleSidedCard } from "@flesh-and-blood/types";
 import { cards } from "@flesh-and-blood/cards";
 import bodyParser from "body-parser";
-import { readFile } from "fs";
 import { chromium } from 'playwright';
 import loki from "lokijs";
 
@@ -55,7 +54,7 @@ app.post('/api/searchListings', (req, res) => {
     let listings = db.addCollection("listings");
     scrapeSite(storeUrls, cardData.cardIdentifier, listings).then((listingReturn) => {
         res.contentType('application/json');
-        res.send(listings.get(listingReturn.$loki));
+        res.send(listings);
     });
 
 });
@@ -95,13 +94,11 @@ async function scrapeSite(urls, cardIdentifier, listings) {
             };
             // You may need to adjust this part depending on how you handle saving data
             console.log('Store data:', storeData);
-            listingReturn = listings.insert(storeData);
 
         } catch (error) {
             console.error('Error scraping site:', url, error);
         }
     }
-
     await browser.close();
     return listingReturn;
 }
