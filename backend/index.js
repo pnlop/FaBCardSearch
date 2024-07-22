@@ -43,7 +43,15 @@ app.post('/api/searchCard', (req, res) => {
     const searchResults = search.search(searchQuery.query);
     console.log(searchResults);
     res.contentType('application/json');
-    res.send(JSON.stringify(searchResults));
+    res.send(JSON.stringify(searchResults, function (key, value) {
+        if (key == 'oppositeSideCard') {
+            return "Double Sided Card(broken behaviour)";
+        }
+        else {
+            return value;
+        }
+        ;
+    }));
 });
 app.post('/api/searchListings', (req, res) => {
     const requestData = req.body;
@@ -53,9 +61,10 @@ app.post('/api/searchListings', (req, res) => {
     console.log(storeUrls);
     let db = new lokijs_1.default("listinginfo.db");
     let listings = db.addCollection("listings");
-    scrapeSite(storeUrls, cardData.cardIdentifier, listings).then((listingReturn) => {
+    scrapeSite(storeUrls, cardData.cardIdentifier, listings).then(() => {
         res.contentType('application/json');
-        res.send(listings.get(listingReturn.$loki));
+        let results = listings.chain().data();
+        res.send(JSON.stringify(results));
     });
 });
 function scrapeSite(urls, cardIdentifier, listings) {
@@ -91,14 +100,13 @@ function scrapeSite(urls, cardIdentifier, listings) {
                 };
                 // You may need to adjust this part depending on how you handle saving data
                 console.log('Store data:', storeData);
-                listingReturn = listings.insert(storeData);
+                listings.insert(storeData);
             }
             catch (error) {
                 console.error('Error scraping site:', url, error);
             }
         }
         yield browser.close();
-        return listingReturn;
     });
 }
 //# sourceMappingURL=index.js.map

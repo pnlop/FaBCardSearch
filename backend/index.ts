@@ -40,7 +40,13 @@ app.post('/api/searchCard', (req, res) => {
     console.log(searchResults);
 
     res.contentType('application/json')
-    res.send(JSON.stringify(searchResults));
+    res.send(JSON.stringify(searchResults, function(key, value) {
+        if(key == 'oppositeSideCard') { 
+          return "Double Sided Card(broken behaviour)";
+        } else {
+          return value;
+        };
+      }));
 
 });
 
@@ -54,7 +60,8 @@ app.post('/api/searchListings', (req, res) => {
     let listings = db.addCollection("listings");
     scrapeSite(storeUrls, cardData.cardIdentifier, listings).then(() => {
         res.contentType('application/json');
-        res.send(listings.chain().data());
+	let results = listings.chain().data();
+        res.send(JSON.stringify(results));
     });
 
 });
@@ -94,7 +101,7 @@ async function scrapeSite(urls, cardIdentifier, listings) {
             };
             // You may need to adjust this part depending on how you handle saving data
             console.log('Store data:', storeData);
-
+	    listings.insert(storeData);
         } catch (error) {
             console.error('Error scraping site:', url, error);
         }
