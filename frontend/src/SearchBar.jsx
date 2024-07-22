@@ -16,7 +16,7 @@ const SearchBar = ({ onSearch, loading }) => {
       <TextInput
         type="text"
         value={query}
-        w={300}
+        w={ {"xs": "250", "sm": "300", "md": "300", "lg": "300", "xl": "300"}}
         onChange={handleInputChange}
         placeholder="Search FaB Card..."
         className="searchTerm"
