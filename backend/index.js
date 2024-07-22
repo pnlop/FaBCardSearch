@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -8,8 +17,8 @@ const cors_1 = __importDefault(require("cors"));
 const search_1 = __importDefault(require("@flesh-and-blood/search"));
 const cards_1 = require("@flesh-and-blood/cards");
 const body_parser_1 = __importDefault(require("body-parser"));
-const cypress_1 = __importDefault(require("cypress"));
-const fs_1 = require("fs");
+const playwright_1 = require("playwright");
+const lokijs_1 = __importDefault(require("lokijs"));
 const app = (0, express_1.default)();
 app.use(body_parser_1.default.json());
 app.use((0, cors_1.default)());
@@ -34,7 +43,15 @@ app.post('/api/searchCard', (req, res) => {
     const searchResults = search.search(searchQuery.query);
     console.log(searchResults);
     res.contentType('application/json');
-    res.send(JSON.stringify(searchResults));
+    res.send(JSON.stringify(searchResults, function (key, value) {
+        if (key == 'oppositeSideCard') {
+            return "Double Sided Card(broken behaviour)";
+        }
+        else {
+            return value;
+        }
+        ;
+    }));
 });
 app.post('/api/searchListings', (req, res) => {
     const requestData = req.body;
@@ -42,28 +59,54 @@ app.post('/api/searchListings', (req, res) => {
     const storeUrls = requestData.storeUrls;
     console.log(cardData);
     console.log(storeUrls);
-    let runResult = cypress_1.default.run({
-        spec: 'cypress/e2e/cardsearch.cy.js', // Path to your test file
-        browser: 'chrome', // Optional: Specify browser (default is Electron)
-        headless: true, // Optional: Run headlessly (default is true));
-        env: {
-            cardData: cardData,
-            storeUrls: storeUrls,
-            listingData: []
-        }
-    }).then(() => {
-        //read .json file called saleInfo.json and send its contents
-        (0, fs_1.readFile)(__dirname + '/saleInfo.json', 'utf8', (err, data) => {
-            if (err) {
-                console.error(err);
-                return;
-            }
-            res.contentType('application/json');
-            res.send(data);
-        });
+    let db = new lokijs_1.default("listinginfo.db");
+    let listings = db.addCollection("listings");
+    scrapeSite(storeUrls, cardData.cardIdentifier, listings).then(() => {
+        res.contentType('application/json');
+        let results = listings.chain().data();
+        res.send(JSON.stringify(results));
     });
 });
-app.post('/scrapeReturn', (req, res) => {
-    res.send(req.body);
-});
+function scrapeSite(urls, cardIdentifier, listings) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const browser = yield playwright_1.chromium.launch();
+        // Perform scraping for each URL
+        let listingReturn;
+        for (const url of urls) {
+            const context = yield browser.newContext();
+            const page = yield context.newPage();
+            try {
+                yield page.goto(url);
+                // Perform search action
+                yield page.waitForSelector('form[action="/search"][method="get"][class*="search-header"]');
+                yield page.fill('form[action="/search"][method="get"][class*="search-header"] input[type="search"]', cardIdentifier);
+                yield page.click('form[action="/search"][method="get"][class*="search-header"] button[type="submit"]');
+                yield page.waitForSelector('.list-view-items');
+                // Extract listing data
+                const listingData = yield page.$$eval('.list-view-items > div', items => {
+                    const data = [];
+                    items.forEach(item => {
+                        if (item.innerHTML.length === 0) {
+                            const variants = item.getAttribute('data-product-variants');
+                            data.push(JSON.parse(variants));
+                        }
+                    });
+                    return data;
+                });
+                // Save data (you may adjust how you want to save this data)
+                const storeData = {
+                    url: url,
+                    listings: listingData
+                };
+                // You may need to adjust this part depending on how you handle saving data
+                console.log('Store data:', storeData);
+                listings.insert(storeData);
+            }
+            catch (error) {
+                console.error('Error scraping site:', url, error);
+            }
+        }
+        yield browser.close();
+    });
+}
 //# sourceMappingURL=index.js.map

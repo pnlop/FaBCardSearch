@@ -1,5 +1,5 @@
 {
-  "name": "FaBCardSearchBackend",
+  "name": "backend",
   "version": "1.0.0",
   "description": "Endpoint for FaBCardSearch",
   "main": "index.ts/index.js",
@@ -13,8 +13,9 @@
     "@flesh-and-blood/search": "^2.1.30",
     "@flesh-and-blood/types": "^2.1.30",
     "cors": "^2.8.5",
-    "cypress": "^13.13.0",
     "express": "^4.19.2",
+    "lokijs": "^1.5.12",
+    "playwright": "^1.45.2",
     "tsc": "^2.0.4"
   }
 }
