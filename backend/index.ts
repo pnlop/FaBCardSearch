@@ -52,9 +52,10 @@ app.post('/api/searchListings', (req, res) => {
     console.log(storeUrls);
     let db = new loki("listinginfo.db");
     let listings = db.addCollection("listings");
+    let listingsView = listings.addDynamicView("listingsView");
     scrapeSite(storeUrls, cardData.cardIdentifier, listings).then((listingReturn) => {
         res.contentType('application/json');
-        res.send(listings);
+        res.send(listingsView.data());
     });
 
 });
