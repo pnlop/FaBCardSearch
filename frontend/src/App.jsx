@@ -42,7 +42,7 @@ function App() {
       return;
     }
     try {
-      setHasURL("");
+      setErrorURL("");
       const listingRequest = { storeUrls: cardData, cardData: storeUrls };
       setScraping(true);
       fetch(backendURL + "/searchListings", {
