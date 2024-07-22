@@ -13,7 +13,7 @@ import {
   Text,
   Title,
 } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import { useDisclosure, useFavicon } from "@mantine/hooks";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { useState } from "react";
 import ListingTableView from "./ListingTableView";
@@ -107,8 +107,9 @@ function App() {
 
   return (
     <AppShell
-      header={{ height: 100 }}
+      header={{ height: 250 }}
       padding="md"
+      withBorder={false}
       aside={{
         width: 300,
         justify: "center",
@@ -118,7 +119,7 @@ function App() {
       }}
     >
       <div className="App">
-        <AppShell.Header p={15}>
+        <AppShell.Header>
           <ActionIcon
             variant="subtle"
             size="xl"
@@ -131,11 +132,15 @@ function App() {
             pt={15}
             style={{ position: "absolute", right: 15 }}
           ></Burger>
-          <Center>
+          <Center overflow="hidden">
+            <Image fit="contain"
+                  radius={"md"}
+                  h={150}
+                  src={ "/favicon.svg" }/>
             <Title order={1}>Card Shark</Title>
           </Center>
         </AppShell.Header>
-        <AppShell.Aside>
+        <AppShell.Aside pr={25}>
           <Box align="center">
             <URLInput
               url={url}
