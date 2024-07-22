@@ -9,6 +9,7 @@ import {
   Flex,
   Grid,
   Image,
+  LoadingOverlay,
   Text,
   Title,
 } from "@mantine/core";
@@ -28,6 +29,7 @@ function App() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [scraping, setScraping] = useState(false);
+  const [errorURL, setErrorURL] = useState("");
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure(false);
 
   const LSSImageURL =
@@ -35,7 +37,12 @@ function App() {
   const webpURLSuffix = ".webp";
   const backendURL = "https://fabcardshark.com/api";
   const handleImageClick = async (cardData, storeUrls) => {
+    if (cardData.length === 0 || storeUrls.length === 0) {
+      setErrorURL("Please enter at least one URL to search");
+      return;
+    }
     try {
+      setHasURL("");
       const listingRequest = { storeUrls: cardData, cardData: storeUrls };
       setScraping(true);
       fetch(backendURL + "/searchListings", {
@@ -149,8 +156,10 @@ function App() {
                   <Center pb={40}>
                     <SearchBar onSearch={handleSearch} loading={loading} />
                   </Center>
+                  {errorURL && <Text size="lg" c="red">{errorURL}</Text>}
                   <Grid className="search-results">
                   <LoadingOverlay visible={loading} zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} loaderProps={{ color: 'pink', type: 'bars' }}/>
+                  <LoadingOverlay visible={scraping} zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} loaderProps={{ color: 'pink', type: 'bars' }}/>
                     {cards.searchResults?.map((card) => (
                       <Grid.Col className="card-info" span={"content"} p={25}>
                         <Card
@@ -186,7 +195,6 @@ function App() {
 
             {pageview && (
               <div className="listing-view">
-                <LoadingOverlay visible={scraping} zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} loaderProps={{ color: 'pink', type: 'bars' }}/>
                 <ListingTableView listings={listingsData} />
               </div>
             )}
