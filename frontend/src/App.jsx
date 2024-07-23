@@ -127,7 +127,7 @@ function App() {
         .then((response) => response.json())
         .then((data) => {
           console.log("Success:", data);
-          setCards(data);
+          setCards(data.data);
         })
         .catch((error) => {
           console.error("Error:", error);
@@ -216,11 +216,11 @@ function App() {
                           <Card.Section>
                             <Image
                               fit="contain"
-                              key={card.cardIdentifier}
+                              key={card.name}
                               radius={"md"}
                               h={250}
-                              src={
-                                LSSImageURL + card.defaultImage + webpURLSuffix
+                              src={ value === fab ?
+                                LSSImageURL + card.defaultImage + webpURLSuffix : card.uri
                               }
                               alt={card.name + "(" + card.cardIdentifier + ")"}
                               className="card-image"

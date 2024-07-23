@@ -49,11 +49,11 @@ app.post('/api/searchCard', (req, res) => {
 async function ExecuteRequest(query, page): Promise<[]> {
     let response = await axios.get('https://api.scryfall.com/cards/search?page='+page+'&q='+query);
     let data = response.data;
-    if (response.data.has_more === true) {
-        return data.concat(await ExecuteRequest(query, page++));
-    } else {
+    //if (response.data.has_more === true) {
+    //    return data.concat(await ExecuteRequest(query, page++));
+    //} else {
         return data;
-    }
+    //}
 }
 
 app.post('/api/searchCardMTG', (req, res) => {
