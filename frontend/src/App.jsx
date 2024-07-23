@@ -221,7 +221,7 @@ function App() {
                               key={card.name}
                               radius={"md"}
                               h={250}
-                              src={ value === fab ?
+                              src={ value === "fab" ?
                                 LSSImageURL + card.defaultImage + webpURLSuffix : card.uri
                               }
                               alt={card.name + "(" + card.cardIdentifier + ")"}
