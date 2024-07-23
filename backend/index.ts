@@ -52,15 +52,18 @@ app.post('/api/searchCardMTG', (req, res) => {
     let searchResults;
     let searchResultsArray = [];
     while (searchResults === undefined || searchResults.has_more === true) {
+        console.log(searchQuery);
         https.get('https://api.scryfall.com/cards/search?page=' + page + '&q=' + searchQuery.query, (resp) => {
             let data = "";
             resp.on('data', (chunk) => {
                 data += chunk;
+                console.log("chunk: "+chunk);
             });
             resp.on('end', () => {
                 searchResults = JSON.parse(data);
             });
         });
+        console.log(searchResults);
         searchResultsArray.push(searchResults);
         page++;
     }
