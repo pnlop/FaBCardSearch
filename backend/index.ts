@@ -71,6 +71,7 @@ app.post('/api/searchListings', (req, res) => {
     const requestData = req.body;
     const cardData = requestData.cardData;
     const storeUrls = requestData.storeUrls;
+    cardData.cardIdentifier = cardData.cardIdentifier ? cardData.cardIdentifier : cardData.name;
     let db = new loki("listinginfo.db");
     let listings = db.addCollection("listings");
     scrapeSite(storeUrls, cardData.cardIdentifier, listings).then(() => {
