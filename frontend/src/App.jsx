@@ -10,10 +10,11 @@ import {
   Grid,
   Image,
   LoadingOverlay,
+  SegmentedControl,
   Text,
-  Title,
+  Title
 } from "@mantine/core";
-import { useDisclosure, useFavicon } from "@mantine/hooks";
+import { useDisclosure } from "@mantine/hooks";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { useState } from "react";
 import ListingTableView from "./ListingTableView";
@@ -30,12 +31,14 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [scraping, setScraping] = useState(false);
   const [errorURL, setErrorURL] = useState("");
+  const [value, setValue] = useState("fab");
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure(false);
 
   const LSSImageURL =
     "https://d2h5owxb2ypf43.cloudfront.net/cards/";
   const webpURLSuffix = ".webp";
   const backendURL = "https://fabcardshark.com/api";
+
   const handleImageClick = async (cardData, storeUrls) => {
     if (cardData.length === 0 || storeUrls.length === 0) {
       setErrorURL("Please enter at least one URL to search");
@@ -55,10 +58,7 @@ function App() {
         body: JSON.stringify(listingRequest),
       })
         .then((response) => response.json())
-        .then((data) => {
-          console.log("Success:", data);
-          // Update the state with the new data if needed
-          // setImages(updatedImages);
+        .then((data) => {     
           setPageview(1);
           setListings(data);
         })
@@ -69,7 +69,16 @@ function App() {
       console.error("Error:", error);
     }
   };
+
   const handleSearch = async (query) => {
+    if (tcg === "fab") {
+      await searchFaB(query);
+    } else {
+      await searchMTG(query);
+    }
+  };
+
+  const searchFaB = async (query) => {
     try {
       setLoading(true);
       const queryPayload = { query: query };
@@ -80,7 +89,38 @@ function App() {
           "Content-Type": "application/json",
           Accept: "application/json",
 	          'Access-Control-Allow-Origin':'*',
-            'Access-Control-Allow-Methods':'POST,PATCH,OPTIONS',
+            'Access-Control-Allow-Methods':'POST',
+        },
+        body: queryJSON,
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Success:", data);
+          setCards(data);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const searchMTG = async (query) => {
+    try {
+      setLoading(true);
+      const queryPayload = { query: query };
+      const queryJSON = JSON.stringify(queryPayload);
+      fetch(backendURL + "/searchCardMTG", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+	          'Access-Control-Allow-Origin':'*',
+            'Access-Control-Allow-Methods':'POST',
         },
         body: queryJSON,
       })
@@ -159,6 +199,7 @@ function App() {
               <Flex gap={"sm"} justify="center" overflow="hidden" p={25}>
                 <Flex align={"center"} direction="column" w="100%">
                   <Center pb={40}>
+                    <SegmentedControl value={value} onChange={setValue} data={[{label: 'FaB', value: "fab"}, {label: 'MTG', value: "mtg"}]} />
                     <SearchBar onSearch={handleSearch} loading={loading} />
                   </Center>
                   {errorURL && <Text size="lg" c="red">{errorURL}</Text>}

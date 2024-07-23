@@ -6,7 +6,7 @@ import { cards } from "@flesh-and-blood/cards";
 import bodyParser from "body-parser";
 import { chromium } from 'playwright';
 import loki from "lokijs";
-
+import https from "https";
 
 const app = express();
 app.use(bodyParser.json());
@@ -38,13 +38,37 @@ app.post('/api/searchCard', (req, res) => {
     res.contentType('application/json')
     res.send(JSON.stringify(searchResults, function(key, value) {
         if(key == 'oppositeSideCard') { 
-          return "Double Sided Card(broken behaviour)";
+          return "Double Sided Card (broken behaviour)";
         } else {
           return value;
         };
       }));
 
 });
+
+app.post('/api/searchCardMTG', (req, res) => {
+    const searchQuery = req.body;
+    let page = 1;
+    let searchResults;
+    let searchResultsArray = [];
+    while (searchResults === undefined || searchResults.has_more === true) {
+        https.get('https://api.scryfall.com/cards/search?page=' + page + '&q=' + searchQuery.query, (resp) => {
+            let data = "";
+            resp.on('data', (chunk) => {
+                data += chunk;
+            });
+            resp.on('end', () => {
+                searchResults = JSON.parse(data);
+            });
+        });
+        searchResultsArray.push(JSON.parse(searchResults));
+        page++;
+    }
+    res.contentType('application/json')
+    res.send(JSON.stringify(searchResults));
+});
+
+
 
 app.post('/api/searchListings', (req, res) => {
     const requestData = req.body;
