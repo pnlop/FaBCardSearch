@@ -201,7 +201,7 @@ function App() {
               <Flex gap={"sm"} justify="center" overflow="hidden" p={25}>
                 <Flex align={"center"} direction="column" w="100%">
                   <Center pb={40}>
-                    <SegmentedControl value={value} onChange={setValue} data={[{label: 'FaB', value: "fab"}, {label: 'MTG', value: "mtg"}]} />
+                    <SegmentedControl value={value} onChange={setValue} color="blue" data={[{label: 'FaB', value: "fab"}, {label: 'MTG', value: "mtg"}]} />
                     <SearchBar onSearch={handleSearch} loading={loading} />
                   </Center>
                   {errorURL && <Text size="lg" c="red">{errorURL}</Text>}
