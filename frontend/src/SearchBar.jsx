@@ -1,6 +1,6 @@
 import { ActionIcon, Center, TextInput } from "@mantine/core";
 import { IconSearch, IconLoader2, IconArrowRight } from "@tabler/icons-react";
-import React, { useState } from "react";
+import { useState } from "react";
 const SearchBar = ({ onSearch, loading }) => {
   const [query, setQuery] = useState("");
 
@@ -28,7 +28,7 @@ const SearchBar = ({ onSearch, loading }) => {
           handleSearch();
         }
       }}
-      leftSection={<IconSearch style={{ width: "18rem", height: "18ren" }} stroke={1.5} />}
+      leftSection={<IconSearch style={{ width: "18rem", height: "18rem" }} stroke={1.5} />}
       rightSection={
         <ActionIcon size={32} radius="xl" color="blue" variant="filled">
           {loading ? 
