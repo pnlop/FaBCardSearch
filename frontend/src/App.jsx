@@ -71,7 +71,7 @@ function App() {
   };
 
   const handleSearch = async (query) => {
-    if (tcg === "fab") {
+    if (value === "fab") {
       await searchFaB(query);
     } else {
       await searchMTG(query);
