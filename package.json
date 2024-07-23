@@ -2,7 +2,6 @@
   "name": "FaBCardSearch",
   "version": "1.0.0",
   "dependencies": {
-    "@tabler/icons-react": "^3.11.0",
     "concurrently": "^8.2.2"
   },
   "scripts": {

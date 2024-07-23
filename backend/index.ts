@@ -61,7 +61,7 @@ app.post('/api/searchCardMTG', (req, res) => {
                 searchResults = JSON.parse(data);
             });
         });
-        searchResultsArray.push(JSON.parse(searchResults));
+        searchResultsArray.push(searchResults);
         page++;
     }
     res.contentType('application/json')
