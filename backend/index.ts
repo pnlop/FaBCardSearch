@@ -61,7 +61,7 @@ app.post('/api/searchCardMTG', (req, res) => {
     ExecuteRequest(searchQuery.query, 1).then((searchResults) => {
         console.log(searchResults);
         res.contentType('application/json');
-        res.send(JSON.stringify(searchResults));
+        res.send(searchResults);
     });
 });
 
