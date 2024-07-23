@@ -1,4 +1,4 @@
-import express from "express";
+import express, { query } from "express";
 import cors from "cors";
 import Search, { SearchCard } from "@flesh-and-blood/search";
 import { DoubleSidedCard } from "@flesh-and-blood/types";
@@ -6,7 +6,8 @@ import { cards } from "@flesh-and-blood/cards";
 import bodyParser from "body-parser";
 import { chromium } from 'playwright';
 import loki from "lokijs";
-import https from "https";
+import axios from "axios";
+import _ from "lodash.chunk";
 
 const app = express();
 app.use(bodyParser.json());
@@ -46,29 +47,36 @@ app.post('/api/searchCard', (req, res) => {
 
 });
 
+function customizer(objValue, srcValue) {
+    if (_.isArray(objValue)) {
+        return objValue.concat(srcValue);
+    }
+}
+
+async function ExecuteRequest(url, data, page) {
+    // As this is a recursive function, we need to be able to pass it the prevous data. Here we either used the passed in data, or we create a new objet to hold our data.
+    data = data || {};
+    await axios.get(url+page+'&q='+data).then(response => {
+        // We merge the returned data with the existing data
+        console.log(data)
+        _.mergeWith(data, response.data, customizer);
+        // We check if there is more paginated data to be obtained
+        if (response.data.has_more) {
+            // If nextPageUrl is not null, we have more data to grab
+            return ExecuteRequest(url, data, page++);
+        }
+    });
+
+    return data;
+}
+
 app.post('/api/searchCardMTG', (req, res) => {
     const searchQuery = req.body;
-    let page = 1;
-    let searchResults;
-    let searchResultsArray = [];
-    while (searchResults === undefined || searchResults.has_more === true) {
-        console.log(searchQuery);
-        https.get('https://api.scryfall.com/cards/search?page=' + page + '&q=' + searchQuery.query, (resp) => {
-            let data = "";
-            resp.on('data', (chunk) => {
-                data += chunk;
-                console.log("chunk: "+chunk);
-            });
-            resp.on('end', () => {
-                searchResults = JSON.parse(data);
-            });
-        });
+    ExecuteRequest('https://api.scryfall.com/cards/search?page=', searchQuery.query, 1).then((searchResults) => {
         console.log(searchResults);
-        searchResultsArray.push(searchResults);
-        page++;
-    }
-    res.contentType('application/json')
-    res.send(JSON.stringify(searchResults));
+        res.contentType('application/json');
+        res.send(JSON.stringify(searchResults));
+    });
 });
 
 
