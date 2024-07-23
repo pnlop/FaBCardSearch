@@ -222,7 +222,7 @@ function App() {
                               radius={"md"}
                               h={250}
                               src={ value === "fab" ?
-                                LSSImageURL + card.defaultImage + webpURLSuffix : card.uri
+                                LSSImageURL + card.defaultImage + webpURLSuffix : card.image_uris.normal
                               }
                               alt={card.name + "(" + card.cardIdentifier + ")"}
                               className="card-image"
