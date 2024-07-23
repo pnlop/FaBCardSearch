@@ -127,7 +127,9 @@ function App() {
         .then((response) => response.json())
         .then((data) => {
           console.log("Success:", data);
-          setCards(data.data);
+          data.searchResults = data.data;
+          setCards(data);
+          console.log(data.searchResults);
         })
         .catch((error) => {
           console.error("Error:", error);
