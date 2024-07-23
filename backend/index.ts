@@ -92,9 +92,9 @@ async function scrapeSite(urls, cardIdentifier, listings) {
             await page.goto(url);
 
             // Perform search action
-            await page.waitForSelector('form[action="/search"][method="get"][class*="search-header"]');
-            await page.fill('form[action="/search"][method="get"][class*="search-header"] input[type="search"]', cardIdentifier);
-            await page.click('form[action="/search"][method="get"][class*="search-header"] button[type="submit"]');
+            await page.waitForSelector('form[action="/search"][method="get"][role="search"]');
+            await page.fill('form[action="/search"][method="get"]input[type="search"][role="search"]', cardIdentifier);
+            await page.click('form[action="/search"][method="get"][role="search"]button[type="submit"]');
             await page.waitForSelector('.list-view-items');
 
             // Extract listing data
