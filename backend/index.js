@@ -26,9 +26,7 @@ app.listen(3000, () => {
     console.log('Server running on port 3000');
 });
 app.post('/api/searchCard', (req, res) => {
-    console.log(req.body);
     const searchQuery = req.body;
-    //console.log(req);
     //from @flesh-and-blood/search search.tests.ts
     const doubleSidedCards = cards_1.cards.map((card) => {
         if (card.oppositeSideCardIdentifier) {
@@ -41,11 +39,10 @@ app.post('/api/searchCard', (req, res) => {
     });
     const search = new search_1.default(doubleSidedCards);
     const searchResults = search.search(searchQuery.query);
-    console.log(searchResults);
     res.contentType('application/json');
     res.send(JSON.stringify(searchResults, function (key, value) {
         if (key == 'oppositeSideCard') {
-            return "Double Sided Card(broken behaviour)";
+            return "Double Sided Card (broken behaviour)";
         }
         else {
             return value;
@@ -53,12 +50,13 @@ app.post('/api/searchCard', (req, res) => {
         ;
     }));
 });
+app.post('/api/searchCardMTG', (req, res) => {
+    const searchQuery = req.body;
+});
 app.post('/api/searchListings', (req, res) => {
     const requestData = req.body;
     const cardData = requestData.cardData;
     const storeUrls = requestData.storeUrls;
-    console.log(cardData);
-    console.log(storeUrls);
     let db = new lokijs_1.default("listinginfo.db");
     let listings = db.addCollection("listings");
     scrapeSite(storeUrls, cardData.cardIdentifier, listings).then(() => {
@@ -71,7 +69,6 @@ function scrapeSite(urls, cardIdentifier, listings) {
     return __awaiter(this, void 0, void 0, function* () {
         const browser = yield playwright_1.chromium.launch();
         // Perform scraping for each URL
-        let listingReturn;
         for (const url of urls) {
             const context = yield browser.newContext();
             const page = yield context.newPage();
@@ -93,13 +90,10 @@ function scrapeSite(urls, cardIdentifier, listings) {
                     });
                     return data;
                 });
-                // Save data (you may adjust how you want to save this data)
                 const storeData = {
                     url: url,
                     listings: listingData
                 };
-                // You may need to adjust this part depending on how you handle saving data
-                console.log('Store data:', storeData);
                 listings.insert(storeData);
             }
             catch (error) {

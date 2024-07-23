@@ -12,16 +12,12 @@
     "@flesh-and-blood/cards": "^2.1.30",
     "@flesh-and-blood/search": "^2.1.30",
     "@flesh-and-blood/types": "^2.1.30",
+    "@types/node": "^20.14.11",
     "axios": "^1.7.2",
     "cors": "^2.8.5",
     "express": "^4.19.2",
-    "https": "^1.0.0",
-    "lodash.chunk": "^4.2.0",
     "lokijs": "^1.5.12",
     "playwright": "^1.45.2",
-    "tsc": "^2.0.4"
-  },
-  "devDependencies": {
-    "@types/node": "^20.14.11"
+    "typescript": "^5.5.4"
   }
 }

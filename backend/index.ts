@@ -1,4 +1,4 @@
-import express, { query } from "express";
+import express from "express";
 import cors from "cors";
 import Search, { SearchCard } from "@flesh-and-blood/search";
 import { DoubleSidedCard } from "@flesh-and-blood/types";
@@ -7,7 +7,6 @@ import bodyParser from "body-parser";
 import { chromium } from 'playwright';
 import loki from "lokijs";
 import axios from "axios";
-import _ from "lodash.chunk";
 
 const app = express();
 app.use(bodyParser.json());
@@ -47,32 +46,19 @@ app.post('/api/searchCard', (req, res) => {
 
 });
 
-function customizer(objValue, srcValue) {
-    if (_.isArray(objValue)) {
-        return objValue.concat(srcValue);
+async function ExecuteRequest(query, page): Promise<[]> {
+    let response = await axios.get('https://api.scryfall.com/cards/search?page='+page+'&q='+query);
+    let data = response.data;
+    if (response.data.has_more === true) {
+        return data.concat(await ExecuteRequest(query, page++));
+    } else {
+        return data;
     }
-}
-
-async function ExecuteRequest(url, data, page) {
-    // As this is a recursive function, we need to be able to pass it the prevous data. Here we either used the passed in data, or we create a new objet to hold our data.
-    data = data || {};
-    await axios.get(url+page+'&q='+data).then(response => {
-        // We merge the returned data with the existing data
-        console.log(data)
-        _.mergeWith(data, response.data, customizer);
-        // We check if there is more paginated data to be obtained
-        if (response.data.has_more) {
-            // If nextPageUrl is not null, we have more data to grab
-            return ExecuteRequest(url, data, page++);
-        }
-    });
-
-    return data;
 }
 
 app.post('/api/searchCardMTG', (req, res) => {
     const searchQuery = req.body;
-    ExecuteRequest('https://api.scryfall.com/cards/search?page=', searchQuery.query, 1).then((searchResults) => {
+    ExecuteRequest(searchQuery.query, 1).then((searchResults) => {
         console.log(searchResults);
         res.contentType('application/json');
         res.send(JSON.stringify(searchResults));
@@ -98,7 +84,6 @@ app.post('/api/searchListings', (req, res) => {
 async function scrapeSite(urls, cardIdentifier, listings) {
     const browser = await chromium.launch();
     // Perform scraping for each URL
-    let listingReturn
     for (const url of urls) {
         const context = await browser.newContext();
         const page = await context.newPage();
