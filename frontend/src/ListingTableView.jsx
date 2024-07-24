@@ -12,7 +12,7 @@ const ListingTableView = (listings) => {
     return (
         <div className="listing-table-view">
             <Anchor href={myUrl}>{myUrl}</Anchor>
-            {Object.values(listings.listings.listings).map(listing => (
+            {Object.values(listings.listings).map(listing => (
             <ListingTable listing={listing} url={myUrl} />
         ))}
         </div>
