@@ -72,20 +72,20 @@ app.post('/api/searchListings', (req, res) => {
     const storeUrls = requestData.storeUrls;
     const tcg = requestData.tcg;
     const tcgAbbr = requestData.tcgAbbr;
-    cardData.cardIdentifier = cardData.cardIdentifier ? cardData.cardIdentifier.replace(/-/g, ' ') : cardData.cardName;
-    scrapeSite(storeUrls, cardData.cardIdentifier, tcg, tcgAbbr).then((results) => {
+    const color = tcgAbbr === 'fab' && cardData.cardIdentifier.split('-').at(-1) in ['red', 'blue', 'yellow']? cardData.cardIdentifier.split('-').at(-1) : '';
+    scrapeSite(storeUrls, cardData.name, tcg, tcgAbbr, color).then((results) => {
         res.contentType('application/json');
         res.send(results);
     });
 
 });
 
-async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr) {
+async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr, color ) {
     // Perform scraping for each URL
     let results = [];
-    console.log(cardIdentifier + " " + tcg + " " + tcgAbbr);
+    console.log(cardIdentifier + " " + tcg + " " + tcgAbbr + " " + color);
     for (const url of urls) {
-        execFile("/home/admin/apps/FaBCardSearch/backend/parser/target/release/parser", [url, cardIdentifier, tcg, tcgAbbr], (error, stdout, _) => {
+        execFile("/home/admin/apps/FaBCardSearch/backend/parser/target/release/parser", [url, cardIdentifier, tcg, tcgAbbr, color], (error, stdout, _) => {
             if (error) {
               throw error;
             }
