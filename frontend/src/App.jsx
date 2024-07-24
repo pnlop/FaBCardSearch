@@ -57,7 +57,7 @@ function App() {
         },
         body: JSON.stringify(listingRequest),
       })
-        .then((response) => response.json())
+        .then((response) => response.text())
         .then((data) => {     
           setPageview(1);
           data = "[" + data + "]";
