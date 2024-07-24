@@ -245,7 +245,7 @@ function App() {
 
             {pageview && (
               <div className="listing-view">
-                {listingsData.map((listing) => (
+                {listingsData.listings.map((listing) => (
                   <ListingTableView listings={listing} />
                 ))}
               </div>
