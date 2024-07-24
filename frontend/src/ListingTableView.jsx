@@ -7,9 +7,10 @@ const ListingTableView = (listings) => {
         return null;
     }
     let myUrl = listings.listings.url;
+    let url2 = new URL(myUrl);
     return (
         <div className="listing-table-view">
-            <Anchor href={myUrl}>{myUrl.hostname}</Anchor>
+            <Anchor href={myUrl}>{url2.hostname}</Anchor>
             {listings.listings.listings.map(listing => (
             <ListingTable listing={listing} url={myUrl} />
         ))}
