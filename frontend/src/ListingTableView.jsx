@@ -5,7 +5,7 @@ const ListingTableView = (listings) => {
     if (!listings) {
         return null;
     }
-    let myUrl = listings.listings.url;
+    let myUrl = "google.com";
     return (
         <div className="listing-table-view">
             {listings.listings.listings.map(listing => (
