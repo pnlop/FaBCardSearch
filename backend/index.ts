@@ -78,7 +78,7 @@ app.post('/api/searchListings', (req, res) => {
         splitTitle = cardData.cardIdentifier.split('-');
         console.log(splitTitle);
         console.log(splitTitle[splitTitle.length - 1]);
-        if (splitTitle[splitTitle.length - 1] in ["red", "blue", "yellow"]) {
+        if (["red", "blue", "yellow"].includes(splitTitle[splitTitle.length - 1])) {
             color = splitTitle[splitTitle.length - 1];
         }
     }
@@ -91,18 +91,18 @@ app.post('/api/searchListings', (req, res) => {
 
 async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr, color ) {
     // Perform scraping for each URL
-    let results = [];
     console.log(cardIdentifier + " " + tcg + " " + tcgAbbr + " " + color);
-    for (const url of urls) {
-        execFile("/home/admin/apps/FaBCardSearch/backend/parser/target/release/parser", [url, cardIdentifier, tcg, tcgAbbr, color], (error, stdout, _) => {
+        await Promise.all(
+        urls.map((url) => {
+            execFile("/home/admin/apps/FaBCardSearch/backend/parser/target/release/parser", [url, cardIdentifier, tcg, tcgAbbr, color], (error, stdout, _) => {
             if (error) {
               throw error;
             }
-            results.push("{\"listings\": "+stdout + ", \"url\": " + url + "}");
+            return ("{\"listings\": "+stdout + ", \"url\": " + url + "}");
+        })}).then((results) => {
+    
             console.log(results);
-        });
-    }
-    console.log(results);
-    return results;
+            return results;
+        }));
 }
 
