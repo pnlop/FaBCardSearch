@@ -5,10 +5,12 @@ const ListingTableView = (listings) => {
     if (!listings) {
         return null;
     }
+    console.log(listings.listings);
+    console.log(listings.listings.listings);
     return (
         <div className="listing-table-view">
             {listings.listings.listings.map(listing => (
-            <ListingTable listing={listing} url={listings.listings.listings.url} />
+            <ListingTable listing={listing} url={"https://negativezonecomics.com/"} />
         ))}
         </div>
     );
