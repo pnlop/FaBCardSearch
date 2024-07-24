@@ -6,7 +6,6 @@ const ListingTableView = (listings) => {
         return null;
     }
     console.log(listings.url);
-    console.log(listings.listings.listings);
     return (
         <div className="listing-table-view">
             {listings.listings.listings.map(listing => (
