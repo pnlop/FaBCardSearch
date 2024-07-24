@@ -113,7 +113,7 @@ async function executeParser(url, cardIdentifier, tcg, tcgAbbr, color) {
             return new Promise((resolve, reject) => {
                 proc.on('exit', (code) => {
                     if (code === 0) {
-                        resolve(output);
+                        resolve("{ \"listings\": " + output + ", \"url\": " + url + " }");
                     } else {
                         reject(error);
                     }

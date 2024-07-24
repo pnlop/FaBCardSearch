@@ -60,7 +60,7 @@ function App() {
         .then((response) => response.json())
         .then((data) => {     
           setPageview(1);
-          console.log(data);
+          console.log("Listing Data: " + data);
           setListings(data);
         })
         .finally(() => {
