@@ -97,7 +97,7 @@ async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr, color ) {
         return executeParser(url, cardIdentifier, tcg, tcgAbbr, color);
     }));
     console.log(results);
-    return results;
+    return JSON.stringify(results);
 }
 
 async function executeParser(url, cardIdentifier, tcg, tcgAbbr, color) {
@@ -113,7 +113,7 @@ async function executeParser(url, cardIdentifier, tcg, tcgAbbr, color) {
             return new Promise((resolve, reject) => {
                 proc.on('exit', (code) => {
                     if (code === 0) {
-                        resolve("[{ \"listings\": " + output + ", \"url\": \"" + url + "\" }]");
+                        resolve("{ \"listings\": " + output + ", \"url\": \"" + url + "\" }");
                     } else {
                         reject(error);
                     }
