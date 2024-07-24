@@ -84,7 +84,7 @@ async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr) {
     // Perform scraping for each URL
     let results = [];
     for (const url of urls) {
-        execFile("target/debug/parser", [url, cardIdentifier, tcg, tcgAbbr], (error, stdout, _) => {
+        execFile("/home/admin/apps/FaBCardSearch/backend/parser/target/debug/parser", [url, cardIdentifier, tcg, tcgAbbr], (error, stdout, _) => {
             if (error) {
               throw error;
             }
