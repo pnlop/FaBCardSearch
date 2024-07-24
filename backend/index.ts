@@ -92,8 +92,8 @@ app.post('/api/searchListings', (req, res) => {
 async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr, color ) {
     // Perform scraping for each URL
     console.log(cardIdentifier + " " + tcg + " " + tcgAbbr + " " + color);
-    let results = await Promise.all( urls.map((url) => {
-        executeParser(url, cardIdentifier, tcg, tcgAbbr, color);
+    let results = await Promise.all( urls.map(async (url) => {
+        await executeParser(url, cardIdentifier, tcg, tcgAbbr, color);
     }));
     console.log(results);
     return results;
