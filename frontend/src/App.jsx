@@ -61,6 +61,7 @@ function App() {
         .then((data) => {     
           setPageview(1);
           setListings(data);
+          console.log(data);
         })
         .finally(() => {
           setScraping(false);
