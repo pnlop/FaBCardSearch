@@ -98,7 +98,7 @@ async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr, color ) {
             if (error) {
               throw error;
             }
-            console.log("{"+stdout + ", url: " + url + "}");
+            console.log("{listings: "+stdout + ", url: " + url + "}");
             results.push("{listings: "+stdout + ", url: " + url + "}");
         });
     }
