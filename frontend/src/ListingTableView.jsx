@@ -6,7 +6,7 @@ const ListingTableView = (listings) => {
     if (!listings) {
         return null;
     }
-    console.log("list: " + listings);
+    console.log("list: " + JSON.stringify(listings));
     let myUrl = listings.listings.url;
     console.log(myUrl);
     return (

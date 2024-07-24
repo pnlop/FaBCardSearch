@@ -113,7 +113,7 @@ async function executeParser(url, cardIdentifier, tcg, tcgAbbr, color) {
             return new Promise((resolve, reject) => {
                 proc.on('exit', (code) => {
                     if (code === 0) {
-                        let spaceholder = { listings: JSON.parse(output), url: url };
+                        let spaceholder = { listings: output, url: url };
                         resolve(spaceholder);
                     } else {
                         reject(error);
