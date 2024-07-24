@@ -12,8 +12,8 @@ const ListingTable = (listing, url) => {
         return null;
       }
       return (
-        <Table.Tr hidden={!variant.available}>
-          <Table.Td>{listing.listing.title}</Table.Td>
+        <Table.Tr key={variant.title} hidden={!variant.available}>
+          <Table.Td>fix?</Table.Td>
           <Table.Td>
             {(variant.price / 100).toLocaleString("en-US", {
               style: "currency",
