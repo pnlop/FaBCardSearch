@@ -92,20 +92,14 @@ app.post('/api/searchListings', (req, res) => {
 async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr, color ) {
     // Perform scraping for each URL
     console.log(cardIdentifier + " " + tcg + " " + tcgAbbr + " " + color);
-    const results = await Promise.all( urls.map(async (url) => {
-        let returndata;
-        await executeParser(url, cardIdentifier, tcg, tcgAbbr, color , (data) => {
-            returndata = data;
-        })
-        return await returndata;
+    const results = await Promise.all( urls.map((url) => {
+        return executeParser(url, cardIdentifier, tcg, tcgAbbr, color);
     }));
     console.log(results);
     return results;
 }
 
-async function executeParser(url, cardIdentifier, tcg, tcgAbbr, color, cb) {
-        execFile("/home/admin/apps/FaBCardSearch/backend/parser/target/release/parser", [url, cardIdentifier, tcg, tcgAbbr, color], (error, stdout, _) => {
-            cb("{\"listings\": "+ stdout + ", \"url\": " + url + "}");
-        });
+async function executeParser(url, cardIdentifier, tcg, tcgAbbr, color) {
+        return execFile("/home/admin/apps/FaBCardSearch/backend/parser/target/release/parser", [url, cardIdentifier, tcg, tcgAbbr, color]).stdout;
 }
 
