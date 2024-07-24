@@ -37,7 +37,7 @@ fn main() -> Result<(), Error> {
     let mut products: Vec<Product> = Vec::new();
     let page = 1;
     let mut collections: CollectionResponse = client
-        .get("".to_owned() + &args[1] + "/collections.json?limit=250")
+        .get("".to_owned() + &args[1] + "collections.json?limit=30")
         .send()
         .expect("Failed to send request")
         .json::<CollectionResponse>()
@@ -52,7 +52,7 @@ fn main() -> Result<(), Error> {
             .get(
                 "".to_owned()
                     + &args[1]
-                    + "/collections/"
+                    + "collections/"
                     + collections.collections[0].title.as_str()
                     + "/products.json?limit=250&page="
                     + &page.to_string(),
