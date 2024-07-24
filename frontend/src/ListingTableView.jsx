@@ -7,7 +7,7 @@ const ListingTableView = (listings) => {
     }
     return (
         <div className="listing-table-view">
-            {listings.listings.map(listing => (
+            {listings.listings.listings.map(listing => (
             <ListingTable listing={listing} url={listings.listings.url}/>
         ))}
         </div>
