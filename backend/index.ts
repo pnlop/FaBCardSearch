@@ -77,7 +77,7 @@ app.post('/api/searchListings', (req, res) => {
     if (tcgAbbr === "fab") {
         splitTitle = cardData.cardIdentifier.split('-');
         console.log(splitTitle);
-        console.log(splitTitle[-1]);
+        console.log(splitTitle[splitTitle.length - 1]);
         if (splitTitle[splitTitle.length - 1] in ["red", "blue", "yellow"]) {
             color = splitTitle[splitTitle.length - 1];
         }
@@ -98,8 +98,8 @@ async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr, color ) {
             if (error) {
               throw error;
             }
-            console.log("{\"listings\": "+stdout + ", \"url\": " + url + "}");
             results.push("{\"listings\": "+stdout + ", \"url\": " + url + "}");
+            console.log(results);
         });
     }
     console.log(results);
