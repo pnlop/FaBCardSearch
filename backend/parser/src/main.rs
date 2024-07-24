@@ -37,15 +37,14 @@ fn main() -> Result<(), Error> {
     let client = Client::new();
     let mut products: Vec<Product> = Vec::new();
     let page = 1;
-    info!(
-        "{}",
-        client
-            .get("".to_owned() + &args[1] + "collections.json?limit=30")
-            .send()
-            .expect("Failed to send request")
-            .text()
-            .expect("Failed to parse json")
-    );
+    let response = client
+        .get("".to_owned() + &args[1] + "collections.json?limit=30")
+        .send()
+        .expect("Failed to send request")
+        .text()
+        .expect("Failed to parse json");
+    println!("{}", response);
+
     let mut collections: CollectionResponse = client
         .get("".to_owned() + &args[1] + "collections.json?limit=30")
         .send()
