@@ -8,27 +8,26 @@ const ListingTable = (listing) => {
     return null;
   }
   console.log(listing);
-  const url = listing.url;
   console.log(listing.variants);
-  const rows = listing.map((listing) =>
-    listing.map((sublisting) => {
-      if (!sublisting.available) {
+  const rows = listing.variants.map((variant) => {
+      if (!variant.available) {
         return null;
       }
       return (
-        <Table.Tr key={sublisting.name} hidden={!sublisting.available}>
-          <Table.Td>{sublisting.name}</Table.Td>
+        <Table.Tr key={variant.name} hidden={!variant.available}>
+          <Table.Td>{listing.title}</Table.Td>
           <Table.Td>
-            {(sublisting.price / 100).toLocaleString("en-US", {
+            {(variant.price / 100).toLocaleString("en-US", {
               style: "currency",
               currency: "USD",
             })}
           </Table.Td>
-          <Table.Td>{sublisting.title}</Table.Td>
+          <Table.Td>{variant.title}</Table.Td>
         </Table.Tr>
       );
-    })
+    }
   );
+
   return (
     <Card>
       <Anchor href={url} size="xl">
