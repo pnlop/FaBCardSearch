@@ -92,14 +92,21 @@ app.post('/api/searchListings', (req, res) => {
 async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr, color ) {
     // Perform scraping for each URL
     console.log(cardIdentifier + " " + tcg + " " + tcgAbbr + " " + color);
-    let results = await Promise.all( urls.map(async (url) => {
-        execFile("/home/admin/apps/FaBCardSearch/backend/parser/target/release/parser", [url, cardIdentifier, tcg, tcgAbbr, color], async (error, stdout, _) => {
-        if (error) {
-            throw error;
-        }
-        return await ("{\"listings\": "+stdout + ", \"url\": " + url + "}");
-    })}));
+    let results = await Promise.all( urls.map((url) => {
+        executeParser(url, cardIdentifier, tcg, tcgAbbr, color);
+    }));
     console.log(results);
     return results;
+}
+
+async function executeParser(url, cardIdentifier, tcg, tcgAbbr, color) {
+    return new Promise((resolve, reject) => {
+        execFile("/home/admin/apps/FaBCardSearch/backend/parser/target/release/parser", [url, cardIdentifier, tcg, tcgAbbr, color], (error, stdout, _) => {
+            if (error) {
+                reject(error);
+            }
+            resolve("{\"listings\": "+ stdout + ", \"url\": " + url + "}");
+        });
+    });   
 }
 
