@@ -29,7 +29,7 @@ const ListingTable = (listing, url) => {
   return (
     <Card>
       <Anchor href={url} size="xl">
-        {new URL(url).hostname}
+        {url}
       </Anchor>
       <Table className="listing-table">
         <h1></h1>
