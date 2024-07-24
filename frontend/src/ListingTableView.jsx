@@ -1,7 +1,6 @@
 import React from "react";
 import ListingTable from "./ListingTable";
 import { Anchor } from "@mantine/core";
-import {URL} from "url";
 
 const ListingTableView = (listings) => {
     if (!listings) {
