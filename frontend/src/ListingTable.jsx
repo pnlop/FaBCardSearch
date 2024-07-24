@@ -9,6 +9,8 @@ const ListingTable = (listing, url) => {
     return null;
   }
   console.log("listing "+listing);
+  console.log("url "+url);
+  console.log("listing variants "+listing.variants);
   const rows = listing.variants.map((sublisting) => {
     console.log("sublisting "+sublisting);
       if (!sublisting.available) {
