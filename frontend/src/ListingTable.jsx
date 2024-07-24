@@ -15,10 +15,8 @@ const ListingTable = (listing, url) => {
         <Table.Tr key={variant.title} hidden={!variant.available}>
           <Table.Td>fix?</Table.Td>
           <Table.Td>
-            {(variant.price / 100).toLocaleString("en-US", {
-              style: "currency",
-              currency: "USD",
-            })}
+            {variant.price
+            }
           </Table.Td>
           <Table.Td>{variant.title}</Table.Td>
         </Table.Tr>
@@ -28,11 +26,7 @@ const ListingTable = (listing, url) => {
 
   return (
     <Card>
-      <Anchor href={url} size="xl">
-        {url}
-      </Anchor>
       <Table className="listing-table">
-        <h1></h1>
         <Table.Thead>
           <Table.Tr>
             <Table.Th>Card</Table.Th>
