@@ -92,10 +92,12 @@ app.post('/api/searchListings', (req, res) => {
 async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr, color ) {
     // Perform scraping for each URL
     console.log(cardIdentifier + " " + tcg + " " + tcgAbbr + " " + color);
-    const results = await Promise.all( urls.map((url) => {
-        executeParser(url, cardIdentifier, tcg, tcgAbbr, color , (data) => {
-            return data;
+    const results = await Promise.all( urls.map(async (url) => {
+        let returndata;
+        await executeParser(url, cardIdentifier, tcg, tcgAbbr, color , (data) => {
+            returndata = data;
         })
+        return returndata;
     }));
     console.log(results);
     return results;
