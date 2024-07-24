@@ -4,7 +4,7 @@ const ListingTableView = (listings) => {
     console.log(listings);
     return (
         <div className="listing-table-view">
-            {Object.values(listings.listings).map(listing => (
+            {Object.values(listings[0].listings).map(listing => (
             <ListingTable listing={listing} url={listings.url}/>
         ))}
         </div>
