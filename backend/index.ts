@@ -78,8 +78,8 @@ app.post('/api/searchListings', (req, res) => {
         splitTitle = cardData.cardIdentifier.split('-');
         console.log(splitTitle);
         console.log(splitTitle[-1]);
-        if (splitTitle[-1] in ["red", "blue", "yellow"]) {
-            color = splitTitle[-1];
+        if (splitTitle[splitTitle.length - 1] in ["red", "blue", "yellow"]) {
+            color = splitTitle[splitTitle.length - 1];
         }
     }
     scrapeSite(storeUrls, cardData.name, tcg, tcgAbbr, color).then((results) => {
