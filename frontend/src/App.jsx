@@ -60,7 +60,7 @@ function App() {
         .then((response) => response.text())
         .then((data) => {     
           setPageview(1);
-          data = "[" + data + "]";
+          data =  data ;
           console.log("Listing Data: " + data);
           setListings(JSON.parse(data));
         })
