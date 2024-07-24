@@ -5,11 +5,10 @@ const ListingTableView = (listings) => {
     if (!listings) {
         return null;
     }
-    let myUrl = "google.com";
     return (
         <div className="listing-table-view">
             {listings.listings.listings.map(listing => (
-            <ListingTable listing={listing} url={myUrl} />
+            <ListingTable listing={listing} url={listings.listings.url} />
         ))}
         </div>
     );
