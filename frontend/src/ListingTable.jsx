@@ -7,6 +7,7 @@ const ListingTable = (listing, url) => {
   if (!listing) {
     return null;
   }
+  console.log(url);
   const rows = listing.listing.variants.map((variant) => {
       if (!variant.available) {
         return null;
