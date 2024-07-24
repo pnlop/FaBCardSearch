@@ -8,8 +8,8 @@ const ListingTable = (listing, url) => {
   if (!listing) {
     return null;
   }
-  console.log("listing "+listing);
-  console.log("url "+url);
+  console.log("listing "+JSON.stringify(listing));
+  console.log("url "+JSON.stringify(url));
   console.log("listing variants "+listing.variants);
   const rows = listing.variants.map((sublisting) => {
     console.log("sublisting "+sublisting);
