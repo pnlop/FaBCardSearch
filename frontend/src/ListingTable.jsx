@@ -8,8 +8,9 @@ const ListingTable = (listing, url) => {
   if (!listing) {
     return null;
   }
-  const rows = listing.map((listing) =>
-    listing.map((sublisting) => {
+  console.log("listing "+listing);
+  const rows = listing.variants.map((sublisting) => {
+    console.log("sublisting "+sublisting);
       if (!sublisting.available) {
         return null;
       }
@@ -26,8 +27,8 @@ const ListingTable = (listing, url) => {
           <Table.Td>{sublisting.title}</Table.Td>
         </Table.Tr>
       );
-    })
-  );
+    
+  });
   return (
     <Card>
       <Anchor href={url} size="xl">
