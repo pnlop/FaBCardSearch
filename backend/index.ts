@@ -83,6 +83,7 @@ app.post('/api/searchListings', (req, res) => {
 async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr) {
     // Perform scraping for each URL
     let results = [];
+    console.log(cardIdentifier + " " + tcg + " " + tcgAbbr);
     for (const url of urls) {
         execFile("/home/admin/apps/FaBCardSearch/backend/parser/target/release/parser", [url, cardIdentifier, tcg, tcgAbbr], (error, stdout, _) => {
             if (error) {
