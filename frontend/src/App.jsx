@@ -60,8 +60,8 @@ function App() {
         .then((response) => response.json())
         .then((data) => {     
           setPageview(1);
-          console.log("Listing Data: " + data);
-          setListings(data);
+          console.log("Listing Data: " + JSON.parse(data));
+          setListings(JSON.parse(data));
         })
         .finally(() => {
           setScraping(false);
