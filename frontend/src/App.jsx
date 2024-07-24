@@ -39,14 +39,14 @@ function App() {
   const webpURLSuffix = ".webp";
   const backendURL = "https://fabcardshark.com/api";
 
-  const handleImageClick = async (cardData, storeUrls) => {
+  const handleImageClick = async (cardData, storeUrls, tcg, tcgAbbr) => {
     if (cardData.length === 0 || storeUrls.length === 0) {
       setErrorURL("Please enter at least one URL to search");
       return;
     }
     try {
       setErrorURL("");
-      const listingRequest = { storeUrls: cardData, cardData: storeUrls };
+      const listingRequest = { storeUrls: cardData, cardData: storeUrls, tcg: tcg, tcgAbbr: tcgAbbr };
       setScraping(true);
       fetch(backendURL + "/searchListings", {
         method: "POST",
@@ -211,7 +211,7 @@ function App() {
                     {cards.searchResults?.map((card) => (
                       <Grid.Col className="card-info" span={"content"} p={25}>
                         <Card
-                          onClick={() => handleImageClick(urls, card)}
+                          onClick={() => handleImageClick(urls, card, value === "fab" ? "flesh and blood" : "magic: the gathering", value)}
                           style={{ cursor: "pointer" }}
                           p={25}
                         >

@@ -1,11 +1,10 @@
 import express from "express";
 import cors from "cors";
-import Search, { SearchCard } from "@flesh-and-blood/search";
+import Search from "@flesh-and-blood/search";
 import { DoubleSidedCard } from "@flesh-and-blood/types";
 import { cards } from "@flesh-and-blood/cards";
 import bodyParser from "body-parser";
-import { chromium } from 'playwright';
-import loki from "lokijs";
+import { execFile } from "child_process";
 import axios from "axios";
 
 const app = express();
@@ -71,53 +70,27 @@ app.post('/api/searchListings', (req, res) => {
     const requestData = req.body;
     const cardData = requestData.cardData;
     const storeUrls = requestData.storeUrls;
-    cardData.cardIdentifier = cardData.cardIdentifier ? cardData.cardIdentifier : cardData.name;
-    let db = new loki("listinginfo.db");
-    let listings = db.addCollection("listings");
-    scrapeSite(storeUrls, cardData.cardIdentifier, listings).then(() => {
+    const tcg = requestData.tcg;
+    const tcgAbbr = requestData.tcgAbbr;
+    scrapeSite(storeUrls, cardData.name, tcg, tcgAbbr).then((results) => {
         res.contentType('application/json');
-	let results = listings.chain().data();
-        res.send(JSON.stringify(results));
+        res.send(results);
     });
 
 });
 
-async function scrapeSite(urls, cardIdentifier, listings) {
-    const browser = await chromium.launch();
+async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr) {
     // Perform scraping for each URL
+    let results = [];
     for (const url of urls) {
-        const context = await browser.newContext();
-        const page = await context.newPage();
-        try {
-            await page.goto(url);
-
-            // Perform search action
-            await page.waitForSelector('form[action="/search"][method="get"][role="search"]');
-            await page.fill('form[action="/search"][method="get"]input[type="search"][role="search"]', cardIdentifier);
-            await page.click('form[action="/search"][method="get"][role="search"]button[type="submit"]');
-            await page.waitForSelector('.list-view-items');
-
-            // Extract listing data
-            const listingData = await page.$$eval('.list-view-items > div', items => {
-                const data = [];
-                items.forEach(item => {
-                    if (item.innerHTML.length === 0) {
-                        const variants = item.getAttribute('data-product-variants');
-                        data.push(JSON.parse(variants));
-                    }
-                });
-                return data;
-            });
-
-            const storeData = {
-                url: url,
-                listings: listingData
-            };
-	        listings.insert(storeData);
-        } catch (error) {
-            console.error('Error scraping site:', url, error);
-        }
+        execFile("target/debug/parser", [url, cardIdentifier, tcg, tcgAbbr], (error, stdout, _) => {
+            if (error) {
+              throw error;
+            }
+            console.log("{"+stdout + ", url: " + url + "}");
+            results.push("{"+stdout + ", url: " + url + "}");
+        });
     }
-    await browser.close();
+    return results;
 }
 
