@@ -97,7 +97,7 @@ async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr, color ) {
         await executeParser(url, cardIdentifier, tcg, tcgAbbr, color , (data) => {
             returndata = data;
         })
-        return returndata;
+        return await returndata;
     }));
     console.log(results);
     return results;
@@ -105,7 +105,7 @@ async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr, color ) {
 
 async function executeParser(url, cardIdentifier, tcg, tcgAbbr, color, cb) {
         execFile("/home/admin/apps/FaBCardSearch/backend/parser/target/release/parser", [url, cardIdentifier, tcg, tcgAbbr, color], (error, stdout, _) => {
-            return cb("{\"listings\": "+ stdout + ", \"url\": " + url + "}");
+            cb("{\"listings\": "+ stdout + ", \"url\": " + url + "}");
         });
 }
 
