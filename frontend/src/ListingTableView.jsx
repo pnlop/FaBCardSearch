@@ -7,7 +7,7 @@ const ListingTableView = (listings) => {
         return null;
     }
     let myUrl = listings.listings.url;
-    let url2 = new URL(myUrl);
+    let url2 = new URL(myUrl.getAttribute('href'));
     return (
         <div className="listing-table-view">
             <Anchor href={myUrl}>{url2.hostname}</Anchor>
