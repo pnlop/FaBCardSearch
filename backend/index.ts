@@ -4,7 +4,7 @@ import Search from "@flesh-and-blood/search";
 import { DoubleSidedCard } from "@flesh-and-blood/types";
 import { cards } from "@flesh-and-blood/cards";
 import bodyParser from "body-parser";
-import { execFile } from "child_process";
+import { execFile, spawn } from "child_process";
 import axios from "axios";
 
 const app = express();
@@ -100,6 +100,10 @@ async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr, color ) {
 }
 
 async function executeParser(url, cardIdentifier, tcg, tcgAbbr, color) {
-        return execFile("/home/admin/apps/FaBCardSearch/backend/parser/target/release/parser", [url, cardIdentifier, tcg, tcgAbbr, color]).stdout;
+        return spawn("/home/admin/apps/FaBCardSearch/backend/parser/target/release/parser", [url, cardIdentifier, tcg, tcgAbbr, color], 
+            {
+                shell: true,
+                stdio: ['ignore', 'pipe', 'inherit']
+            }).stdout.setEncoding('utf8');
 }
 
