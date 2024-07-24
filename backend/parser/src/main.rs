@@ -23,6 +23,7 @@ struct ProductResponse {
 #[derive(Serialize, Deserialize)]
 struct Collection {
     title: String,
+    handle: String,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -31,36 +32,29 @@ struct CollectionResponse {
 }
 
 fn main() -> Result<(), Error> {
-    // args[1] = shopify url, args[2] = product name, args[3] = collection name, args[4] = collection name (abbreviated)
+    // args[1] = shopify url, args[2] = product name, args[3] = collection name, args[4] = collection name (abbreviated), args[5] = card color (optional)
     let args: Vec<String> = env::args().collect();
-    let client = Client::new();
+    let client = Client::builder().user_agent("Mozilla/5.0").build().unwrap();
     let mut products: Vec<Product> = Vec::new();
-    let page = 1;
-    let response = client
-        .get("".to_owned() + &args[1] + "collections.json?limit=30")
-        .send()
-        .expect("Failed to send request")
-        .text()
-        .expect("Failed to parse json");
-
+    let mut page = 1;
     let mut collections: CollectionResponse = client
-        .get("".to_owned() + &args[1] + "collections.json?limit=30")
+        .get("".to_owned() + &args[1] + "collections.json?limit=250")
         .send()
         .expect("Failed to send request")
         .json::<CollectionResponse>()
-        .expect(&("Failed to parse json: ".to_owned() + &response));
+        .expect("Failed to parse json");
     collections.collections.retain(|x| {
         (x.title.to_lowercase().contains(&args[3].to_lowercase())
             || x.title.to_lowercase().contains(&args[4].to_lowercase()))
             && x.title.to_lowercase().contains("singles")
     });
     loop {
-        let json_string: ProductResponse = client
+        let mut json_string: ProductResponse = client
             .get(
                 "".to_owned()
                     + &args[1]
                     + "collections/"
-                    + collections.collections[0].title.as_str()
+                    + collections.collections[0].handle.as_str()
                     + "/products.json?limit=250&page="
                     + &page.to_string(),
             )
@@ -68,11 +62,15 @@ fn main() -> Result<(), Error> {
             .expect("Failed to send request")
             .json::<ProductResponse>()
             .expect("Failed to parse json");
-        if json_string.products.len() > 0 {
+        if json_string.products.len() == 0 {
             break;
         }
+        page += 1;
+        json_string.products.retain(|x| {
+            x.title.to_lowercase().contains(&args[2].to_lowercase())
+                && x.title.to_lowercase().contains(&args[5].to_lowercase())
+        });
         products.extend(json_string.products);
     }
-    products.retain(|x| x.title.to_lowercase().contains(&args[2].to_lowercase()));
     return io::stdout().write_all(&sonic_rs::to_vec(&products)?);
 }

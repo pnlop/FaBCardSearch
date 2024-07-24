@@ -72,7 +72,8 @@ app.post('/api/searchListings', (req, res) => {
     const storeUrls = requestData.storeUrls;
     const tcg = requestData.tcg;
     const tcgAbbr = requestData.tcgAbbr;
-    scrapeSite(storeUrls, cardData.name, tcg, tcgAbbr).then((results) => {
+    cardData.cardIdentifier = cardData.cardIdentifier ? cardData.cardIdentifier.replace(/-/g, ' ') : cardData.cardName;
+    scrapeSite(storeUrls, cardData.cardIdentifier, tcg, tcgAbbr).then((results) => {
         res.contentType('application/json');
         res.send(results);
     });
