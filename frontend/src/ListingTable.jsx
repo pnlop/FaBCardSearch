@@ -3,23 +3,21 @@ import { Anchor, Card, Table } from "@mantine/core";
 import React from "react";
 import "./ListingTable.css";
 //turn listing table into dynamic table generator per store, iterate over stores/listings in wrapper component
-const ListingTable = (listing, url) => {
-  let cardName;
+const ListingTable = (listing) => {
   if (!listing) {
     return null;
   }
-  console.log("listing "+JSON.stringify(listing));
-  console.log("url "+JSON.stringify(url));
-  console.log("listing variants "+listing.variants);
-  const rows = listing.variants.map((sublisting) => {
-    console.log("sublisting "+sublisting);
+  console.log(listing);
+  const url = listing.url;
+  console.log(listing.variants);
+  const rows = listing.map((listing) =>
+    listing.map((sublisting) => {
       if (!sublisting.available) {
         return null;
       }
-      cardName = listing.title;
       return (
-        <Table.Tr key={sublisting.title} hidden={!sublisting.available}>
-          <Table.Td>{sublisting.title}</Table.Td>
+        <Table.Tr key={sublisting.name} hidden={!sublisting.available}>
+          <Table.Td>{sublisting.name}</Table.Td>
           <Table.Td>
             {(sublisting.price / 100).toLocaleString("en-US", {
               style: "currency",
@@ -29,15 +27,15 @@ const ListingTable = (listing, url) => {
           <Table.Td>{sublisting.title}</Table.Td>
         </Table.Tr>
       );
-    
-  });
+    })
+  );
   return (
     <Card>
       <Anchor href={url} size="xl">
         {new URL(url).hostname}
       </Anchor>
       <Table className="listing-table">
-        <h1>{cardName}</h1>
+        <h1></h1>
         <Table.Thead>
           <Table.Tr>
             <Table.Th>Card</Table.Th>
