@@ -7,18 +7,13 @@ const ListingTable = (listing) => {
   if (!listing) {
     return null;
   }
-  console.log("listing");
-  console.log(listing);
-  console.log("variants");
-  console.log(listing.variants);
-  console.log(listing.listing.variants);
-  const rows = listing.variants.map((variant) => {
+  const rows = listing.listing.variants.map((variant) => {
       if (!variant.available) {
         return null;
       }
       return (
         <Table.Tr key={variant.name} hidden={!variant.available}>
-          <Table.Td>{listing.title}</Table.Td>
+          <Table.Td>{listing.listing.title}</Table.Td>
           <Table.Td>
             {(variant.price / 100).toLocaleString("en-US", {
               style: "currency",
