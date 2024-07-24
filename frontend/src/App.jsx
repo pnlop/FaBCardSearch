@@ -57,11 +57,11 @@ function App() {
         },
         body: JSON.stringify(listingRequest),
       })
-        .then((response) => {console.log(response.json());response.json();})
+        .then((response) => response.json())
         .then((data) => {     
           setPageview(1);
-          setListings(data);
           console.log(data);
+          setListings(data);
         })
         .finally(() => {
           setScraping(false);
