@@ -1,4 +1,3 @@
-use log::info;
 use reqwest::blocking::Client;
 use sonic_rs::{Deserialize, Serialize};
 use std::env;
@@ -43,14 +42,13 @@ fn main() -> Result<(), Error> {
         .expect("Failed to send request")
         .text()
         .expect("Failed to parse json");
-    println!("{}", response);
 
     let mut collections: CollectionResponse = client
         .get("".to_owned() + &args[1] + "collections.json?limit=30")
         .send()
         .expect("Failed to send request")
         .json::<CollectionResponse>()
-        .expect("Failed to parse json");
+        .expect(&("Failed to parse json: ".to_owned() + &response));
     collections.collections.retain(|x| {
         (x.title.to_lowercase().contains(&args[3].to_lowercase())
             || x.title.to_lowercase().contains(&args[4].to_lowercase()))
