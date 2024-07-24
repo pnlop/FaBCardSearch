@@ -6,6 +6,7 @@ import { cards } from "@flesh-and-blood/cards";
 import bodyParser from "body-parser";
 import { execFile, spawn } from "child_process";
 import axios from "axios";
+import { Readable } from "node:stream";
 
 const app = express();
 app.use(bodyParser.json());
@@ -100,10 +101,23 @@ async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr, color ) {
 }
 
 async function executeParser(url, cardIdentifier, tcg, tcgAbbr, color) {
-        return spawn("/home/admin/apps/FaBCardSearch/backend/parser/target/release/parser", [url, cardIdentifier, tcg, tcgAbbr, color], 
-            {
-                shell: true,
-                stdio: ['ignore', 'pipe', 'inherit']
-            }).stdout.setEncoding('utf8');
+       let proc = execFile("/home/admin/apps/FaBCardSearch/backend/parser/target/release/parser", [url, cardIdentifier, tcg, tcgAbbr, color]);
+         let output = "";
+            let error = "";
+            proc.stdout.on('data', (data) => {
+                output += data;
+            });
+            proc.stderr.on('data', (data) => {
+                error += data;
+            });
+            return new Promise((resolve, reject) => {
+                proc.on('exit', (code) => {
+                    if (code === 0) {
+                        resolve(output);
+                    } else {
+                        reject(error);
+                    }
+                });
+            });
 }
 
