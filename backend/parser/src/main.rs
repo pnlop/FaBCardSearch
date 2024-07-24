@@ -7,6 +7,7 @@ use std::io::{self, Error, Write};
 struct Variant {
     title: String,
     available: bool,
+    price: String,
 }
 
 #[derive(Serialize, Deserialize)]

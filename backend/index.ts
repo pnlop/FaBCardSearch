@@ -99,7 +99,7 @@ async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr, color ) {
               throw error;
             }
             console.log("{"+stdout + ", url: " + url + "}");
-            results.push("{"+stdout + ", url: " + url + "}");
+            results.push("{listings: "+stdout + ", url: " + url + "}");
         });
     }
     return results;
