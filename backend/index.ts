@@ -72,8 +72,16 @@ app.post('/api/searchListings', (req, res) => {
     const storeUrls = requestData.storeUrls;
     const tcg = requestData.tcg;
     const tcgAbbr = requestData.tcgAbbr;
-    cardData.cardIdentifier = cardData.cardIdentifier ? cardData.cardIdentifier.split('-'): "";
-    const color = (tcgAbbr === "fab" && cardData.cardIdentifier[-1] in ['red', 'blue', 'yellow'])? cardData.cardIdentifier[-1] : '';
+    let splitTitle;
+    let color = "";
+    if (tcgAbbr === "fab") {
+        splitTitle = cardData.cardIdentifier.split('-');
+        console.log(splitTitle);
+        console.log(splitTitle[-1]);
+        if (splitTitle[-1] in ["red", "blue", "yellow"]) {
+            color = splitTitle[-1];
+        }
+    }
     scrapeSite(storeUrls, cardData.name, tcg, tcgAbbr, color).then((results) => {
         res.contentType('application/json');
         res.send(results);
