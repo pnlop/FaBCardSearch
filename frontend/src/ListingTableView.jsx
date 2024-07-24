@@ -9,10 +9,11 @@ const ListingTableView = (listings) => {
     console.log("list: " + JSON.stringify(listings));
     let myUrl = listings.listings.url;
     console.log(myUrl);
+    console.log(listings.listings.listings);
     return (
         <div className="listing-table-view">
             <Anchor href={myUrl}>{myUrl}</Anchor>
-            {Object.values(listings).map(listing => (
+            {Object.values(listings.listings.listings).map(listing => (
             <ListingTable listing={listing} url={myUrl} />
         ))}
         </div>
