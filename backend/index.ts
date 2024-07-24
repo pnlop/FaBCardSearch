@@ -97,7 +97,7 @@ async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr, color ) {
         return executeParser(url, cardIdentifier, tcg, tcgAbbr, color);
     }));
     console.log(results);
-    return results;
+    return {listings: results};
 }
 
 async function executeParser(url, cardIdentifier, tcg, tcgAbbr, color) {
