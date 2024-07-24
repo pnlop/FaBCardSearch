@@ -6,6 +6,7 @@ const ListingTableView = (listings) => {
     if (!listings) {
         return null;
     }
+    console.log(listings);
     let myUrl = listings.listings.url;
     console.log(myUrl);
     return (
