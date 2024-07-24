@@ -7,8 +7,8 @@ const ListingTableView = (listings) => {
     }
     return (
         <div className="listing-table-view">
-            {listings.listings.listings.map(listing => (
-            <ListingTable listing={listing} url={listings.listings.url}/>
+            {listings.listings.listings.listing.map(listing => (
+            <ListingTable listing={listing} url={listings.listings.listings.url}/>
         ))}
         </div>
     );
