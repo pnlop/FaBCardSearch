@@ -8,10 +8,33 @@ import {
   Title,
 } from "@mantine/core";
 
+function normalizeUrl(urlString) {
+  // If the URL starts with 'http://' or 'https://', it's already normalized
+  if (urlString.startsWith('http://') || urlString.startsWith('https://')) {
+    if (urlString.endsWith('/')) {
+      return urlString;
+    } else {
+      return urlString + '/';
+    }
+  }
+
+  // If the URL starts with 'www.', prepend 'https://'
+  if (urlString.startsWith('www.')) {
+      return 'https://' + urlString + '/';
+  }
+
+  // Otherwise, treat it as a domain without protocol and prepend 'https://'
+  if (urlString.includes('.')) {
+    return 'https://' + urlString + '/';
+  }
+
+  return urlString;
+}
+
 // Helper function to validate URLs
 const isValidURL = (string) => {
   try {
-    new URL(string);
+    new URL(normalizeUrl(string));
     return true;
   } catch (e) {
     return false;
@@ -26,7 +49,7 @@ const URLInput = ({ url, urls, setUrls, setUrl, addUrl, error, setError }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (isValidURL(url)) {
-      addUrl(url);
+      addUrl(normalizeUrl(url));
       setUrl("");
     } else {
       setError("Please enter a valid URL.");
