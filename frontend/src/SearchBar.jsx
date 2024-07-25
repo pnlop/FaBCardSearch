@@ -21,7 +21,7 @@ const SearchBar = ({ onSearch, loading }) => {
       value={query}
       w={ {"xs": "280", "sm": "300", "md": "300", "lg": "300", "xl": "300"}}
       pl={10}
-      placeholder="Search FaB Card..."
+      placeholder="Search Card..."
       rightSectionWidth={42}
       onKeyDown={(e) => {
         if (e.key === "Enter") {
