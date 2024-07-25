@@ -223,7 +223,7 @@ function App() {
                               radius={"md"}
                               h={250}
                               src={ value === "fab" ?
-                                LSSImageURL + card.defaultImage + webpURLSuffix : card.image_uris.png
+                                LSSImageURL + card.defaultImage + webpURLSuffix : card.image_uris.normal ? card.image_uris.normal : "https://placehold.co/175x250?text=No+Image"
                               }
                               alt={card.name + "(" + card.cardIdentifier + ")"}
                               className="card-image"
