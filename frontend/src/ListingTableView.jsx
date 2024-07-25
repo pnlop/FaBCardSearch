@@ -13,7 +13,7 @@ const ListingTableView = (listings) => {
     return (
         <div className="listing-table-view">
             <Anchor href={myUrl}>{myUrl}</Anchor>
-            {listings.listings.listings.map(listing => (
+            {JSON.parse(listings.listings.listings).map(listing => (
             <ListingTable listing={listing} url={myUrl} />
         ))}
         </div>
