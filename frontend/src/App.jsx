@@ -178,6 +178,7 @@ function App() {
           <ActionIcon
             variant="subtle"
             size="xl"
+            display={listingsData.length > 0 ? "block" : "none"}
             onClick={() => setPageview(!pageview)}
           >
             <IconArrowLeft stroke={2.5} />
