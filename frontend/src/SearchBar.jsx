@@ -28,7 +28,7 @@ const SearchBar = ({ onSearch, loading }) => {
           handleSearch();
         }
       }}
-      leftSection={<IconSearch style={{ width: "15rem", height: "15rem" }} stroke={1.5} />}
+      leftSection={<IconSearch style={{ width: "2rem", height: "2rem" }} stroke={1.5} />}
       rightSection={
         <ActionIcon size={32} radius="xl" color="blue" variant="filled">
           {loading ? 

@@ -14,12 +14,13 @@ import {
   Text,
   Title
 } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import { useDisclosure, useHeadroom } from "@mantine/hooks";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { useState } from "react";
 import ListingTableView from "./ListingTableView";
 import SearchBar from "./SearchBar";
 import URLInput from "./URLInput";
+import Footer from "./Footer";
 
 function App() {
   const [cards, setCards] = useState([]);
@@ -33,11 +34,19 @@ function App() {
   const [errorURL, setErrorURL] = useState("");
   const [value, setValue] = useState("fab");
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure(false);
+  const pinned = useHeadroom({fixedAt:"0"});
+  const footerpinned = useHeadroom({fixedAt:"0%"})
 
   const LSSImageURL =
     "https://d2h5owxb2ypf43.cloudfront.net/cards/";
   const webpURLSuffix = ".webp";
   const backendURL = "https://fabcardshark.com/api";
+
+
+  const setTCG = (value) => {
+    setCards([]);
+    setValue(value);
+  }
 
   const handleImageClick = async (cardData, storeUrls, tcg, tcgAbbr) => {
     if (cardData.length === 0 || storeUrls.length === 0) {
@@ -150,7 +159,7 @@ function App() {
 
   return (
     <AppShell
-      header={{ height: 250 }}
+      header={{ height: 200, offset:true, collapsed:!pinned}}
       padding="md"
       withBorder={false}
       aside={{
@@ -159,6 +168,9 @@ function App() {
         align: "center",
         breakpoint: "lg",
         collapsed: { desktop: !mobileOpened, mobile: !mobileOpened },
+      }}
+      footer={{
+        collapsed: footerpinned, offset: false, height: 65
       }}
     >
       <div className="App">
@@ -202,7 +214,7 @@ function App() {
               <Flex gap={"sm"} justify="center" overflow="hidden" p={25}>
                 <Flex align={"center"} direction="column" w="100%">
                   <Center pb={40}>
-                    <SegmentedControl value={value} onChange={setValue} color="blue" data={[{label: 'FaB', value: "fab"}, {label: 'MTG', value: "mtg"}]} />
+                    <SegmentedControl value={value} onChange={setTCG} color="blue" data={[{label: 'FaB', value: "fab"}, {label: 'MTG', value: "mtg"}]} />
                     <SearchBar onSearch={handleSearch} loading={loading} />
                   </Center>
                   {errorURL && <Text size="lg" c="red">{errorURL}</Text>}
@@ -252,6 +264,9 @@ function App() {
             )}
           </Container>
         </AppShell.Main>
+        <AppShell.Footer>
+          <Footer/>
+        </AppShell.Footer>
       </div>
     </AppShell>
   );
