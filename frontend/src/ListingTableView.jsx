@@ -9,7 +9,7 @@ const ListingTableView = (listings) => {
     console.log("list: " + JSON.stringify(listings));
     let myUrl = listings.listings.url;
     console.log(myUrl);
-    console.log(listings.listings.listings);
+    console.log(typeof listings.listings.listings);
     return (
         <div className="listing-table-view">
             <Anchor href={myUrl}>{myUrl}</Anchor>
