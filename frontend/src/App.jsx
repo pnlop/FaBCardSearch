@@ -162,6 +162,7 @@ function App() {
       header={{ height: 200, offset:true, collapsed:!pinned}}
       padding="md"
       withBorder={false}
+      layout="alt"
       aside={{
         width: 300,
         justify: "center",
@@ -174,6 +175,24 @@ function App() {
       }}
     >
       <div className="App">
+      <AppShell.Aside px={25} style={{backgroundColor:"whitesmoke", border:"solid 0.065rem lightgray"}}>
+          <Burger
+            onClick={toggleMobile}
+            pb={50}
+            pt={20}
+          ></Burger>
+          <Box align="center" pt={15}>
+            <URLInput
+              url={url}
+              urls={urls}
+              setUrls={setUrls}
+              setUrl={setUrl}
+              addUrl={addUrl}
+              error={error}
+              setError={setError}
+            />
+          </Box>
+        </AppShell.Aside>
         <AppShell.Header>
           <ActionIcon
             variant="subtle"
@@ -186,6 +205,7 @@ function App() {
           <Burger
             onClick={toggleMobile}
             pt={15}
+            display={mobileOpened ? "none" : "block"}
             style={{ position: "absolute", right: 15 }}
           ></Burger>
           <Center overflow="hidden">
@@ -196,19 +216,7 @@ function App() {
             <Title order={1}>Card Shark</Title>
           </Center>
         </AppShell.Header>
-        <AppShell.Aside pr={25}>
-          <Box align="center">
-            <URLInput
-              url={url}
-              urls={urls}
-              setUrls={setUrls}
-              setUrl={setUrl}
-              addUrl={addUrl}
-              error={error}
-              setError={setError}
-            />
-          </Box>
-        </AppShell.Aside>
+        
         <AppShell.Main>
           <Container size="lg">
             {!pageview && (
