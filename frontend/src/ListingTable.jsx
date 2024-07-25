@@ -8,7 +8,7 @@ const ListingTable = (listing, url) => {
     return null;
   }
   console.log("listing: " + JSON.stringify(listing));
-  const rows = listing.variants.map((variant) => {
+  const rows = listing.listing.variants.map((variant) => {
       if (!variant.available) {
         return null;
       }
