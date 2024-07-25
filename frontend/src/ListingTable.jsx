@@ -26,8 +26,8 @@ const ListingTable = (listing, url) => {
 
   return (
     <Card>
+      <Anchor href={url} target="_blank" rel="noreferrer">Go to store</Anchor>
       <Table className="listing-table">
-        <Anchor href={url} target="_blank" rel="noreferrer">Go to store</Anchor>
         <Table.Thead>
           <Table.Tr>
             <Table.Th>Card</Table.Th>
