@@ -171,7 +171,7 @@ function App() {
         collapsed: { desktop: !mobileOpened, mobile: !mobileOpened },
       }}
       footer={{
-        collapsed: footerpinned, offset: false, height: 65
+        collapsed: false, offset: true, height: 65
       }}
     >
       <div className="App">
