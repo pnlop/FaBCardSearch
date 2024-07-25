@@ -4,11 +4,10 @@ import React from "react";
 import "./ListingTable.css";
 //turn listing table into dynamic table generator per store, iterate over stores/listings in wrapper component
 const ListingTable = (listing, url) => {
-  if (!listing) {
+  if (!listing || !listing.variants[0].available) {
     return null;
   }
   console.log("listing: " + JSON.stringify(listing));
-  listing.listing.variants = listing.listing.filter((listing) => listing.variants[0].available);
   const rows = listing.listing.variants.map((variant) => {
       if (!variant.available) {
         return null;
