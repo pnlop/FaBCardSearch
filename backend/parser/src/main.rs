@@ -59,7 +59,8 @@ fn main() -> Result<(), Error> {
     });
     loop {
         let mut json_string: ProductResponse = client
-            .get(
+            .request(
+                Method::GET,
                 "".to_owned()
                     + &args[1]
                     + "collections/"
@@ -67,6 +68,7 @@ fn main() -> Result<(), Error> {
                     + "/products.json?limit=250&page="
                     + &page.to_string(),
             )
+            .header(USER_AGENT, user_agent.random())
             .send()
             .expect("Failed to send request")
             .json::<ProductResponse>()
