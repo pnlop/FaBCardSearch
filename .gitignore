@@ -3,3 +3,5 @@ saleInfo.json
 .DS_Store
 frontend/build
 package-lock.json
+*.lock
+target

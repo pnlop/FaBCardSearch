@@ -17,8 +17,8 @@ const cors_1 = __importDefault(require("cors"));
 const search_1 = __importDefault(require("@flesh-and-blood/search"));
 const cards_1 = require("@flesh-and-blood/cards");
 const body_parser_1 = __importDefault(require("body-parser"));
-const playwright_1 = require("playwright");
-const lokijs_1 = __importDefault(require("lokijs"));
+const child_process_1 = require("child_process");
+const axios_1 = __importDefault(require("axios"));
 const app = (0, express_1.default)();
 app.use(body_parser_1.default.json());
 app.use((0, cors_1.default)());
@@ -50,57 +50,51 @@ app.post('/api/searchCard', (req, res) => {
         ;
     }));
 });
+function ExecuteRequest(query, page) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let response = yield axios_1.default.get('https://api.scryfall.com/cards/search?page=' + page + '&q=' + query);
+        let data = response.data;
+        //if (response.data.has_more === true) {
+        //    return data.concat(await ExecuteRequest(query, page++));
+        //} else {
+        return data;
+        //}
+    });
+}
 app.post('/api/searchCardMTG', (req, res) => {
     const searchQuery = req.body;
+    ExecuteRequest(searchQuery.query, 1).then((searchResults) => {
+        console.log(searchResults);
+        res.contentType('application/json');
+        res.send(searchResults);
+    });
 });
 app.post('/api/searchListings', (req, res) => {
     const requestData = req.body;
     const cardData = requestData.cardData;
     const storeUrls = requestData.storeUrls;
-    let db = new lokijs_1.default("listinginfo.db");
-    let listings = db.addCollection("listings");
-    scrapeSite(storeUrls, cardData.cardIdentifier, listings).then(() => {
+    const tcg = requestData.tcg;
+    const tcgAbbr = requestData.tcgAbbr;
+    cardData.cardIdentifier = cardData.cardIdentifier ? cardData.cardIdentifier.replace(/-/g, ' ') : cardData.cardName;
+    scrapeSite(storeUrls, cardData.cardIdentifier, tcg, tcgAbbr).then((results) => {
         res.contentType('application/json');
-        let results = listings.chain().data();
-        res.send(JSON.stringify(results));
+        res.send(results);
     });
 });
-function scrapeSite(urls, cardIdentifier, listings) {
+function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr) {
     return __awaiter(this, void 0, void 0, function* () {
-        const browser = yield playwright_1.chromium.launch();
         // Perform scraping for each URL
+        let results = [];
         for (const url of urls) {
-            const context = yield browser.newContext();
-            const page = yield context.newPage();
-            try {
-                yield page.goto(url);
-                // Perform search action
-                yield page.waitForSelector('form[action="/search"][method="get"][class*="search-header"]');
-                yield page.fill('form[action="/search"][method="get"][class*="search-header"] input[type="search"]', cardIdentifier);
-                yield page.click('form[action="/search"][method="get"][class*="search-header"] button[type="submit"]');
-                yield page.waitForSelector('.list-view-items');
-                // Extract listing data
-                const listingData = yield page.$$eval('.list-view-items > div', items => {
-                    const data = [];
-                    items.forEach(item => {
-                        if (item.innerHTML.length === 0) {
-                            const variants = item.getAttribute('data-product-variants');
-                            data.push(JSON.parse(variants));
-                        }
-                    });
-                    return data;
-                });
-                const storeData = {
-                    url: url,
-                    listings: listingData
-                };
-                listings.insert(storeData);
-            }
-            catch (error) {
-                console.error('Error scraping site:', url, error);
-            }
+            (0, child_process_1.execFile)("/home/admin/apps/FaBCardSearch/backend/parser/target/debug/parser", [url, cardIdentifier, tcg, tcgAbbr], (error, stdout, _) => {
+                if (error) {
+                    throw error;
+                }
+                console.log("{" + stdout + ", url: " + url + "}");
+                results.push("{" + stdout + ", url: " + url + "}");
+            });
         }
-        yield browser.close();
+        return results;
     });
 }
 //# sourceMappingURL=index.js.map

@@ -1,12 +1,12 @@
 import express from "express";
 import cors from "cors";
-import Search, { SearchCard } from "@flesh-and-blood/search";
+import Search from "@flesh-and-blood/search";
 import { DoubleSidedCard } from "@flesh-and-blood/types";
 import { cards } from "@flesh-and-blood/cards";
 import bodyParser from "body-parser";
-import { chromium } from 'playwright';
-import loki from "lokijs";
+import { execFile, spawn } from "child_process";
 import axios from "axios";
+import { Readable } from "node:stream";
 
 const app = express();
 app.use(bodyParser.json());
@@ -71,53 +71,54 @@ app.post('/api/searchListings', (req, res) => {
     const requestData = req.body;
     const cardData = requestData.cardData;
     const storeUrls = requestData.storeUrls;
-    cardData.cardIdentifier = cardData.cardIdentifier ? cardData.cardIdentifier : cardData.name;
-    let db = new loki("listinginfo.db");
-    let listings = db.addCollection("listings");
-    scrapeSite(storeUrls, cardData.cardIdentifier, listings).then(() => {
+    const tcg = requestData.tcg;
+    const tcgAbbr = requestData.tcgAbbr;
+    let splitTitle;
+    let color = "";
+    if (tcgAbbr === "fab") {
+        splitTitle = cardData.cardIdentifier.split('-');
+        console.log(splitTitle);
+        console.log(splitTitle[splitTitle.length - 1]);
+        if (["red", "blue", "yellow"].includes(splitTitle[splitTitle.length - 1])) {
+            color = splitTitle[splitTitle.length - 1];
+        }
+    }
+    scrapeSite(storeUrls, cardData.name, tcg, tcgAbbr, color).then((results) => {
         res.contentType('application/json');
-	let results = listings.chain().data();
-        res.send(JSON.stringify(results));
+        res.send(results);
     });
 
 });
 
-async function scrapeSite(urls, cardIdentifier, listings) {
-    const browser = await chromium.launch();
+async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr, color ) {
     // Perform scraping for each URL
-    for (const url of urls) {
-        const context = await browser.newContext();
-        const page = await context.newPage();
-        try {
-            await page.goto(url);
+    console.log(cardIdentifier + " " + tcg + " " + tcgAbbr + " " + color);
+    const results = await Promise.all( urls.map((url) => {
+        return executeParser(url, cardIdentifier, tcg, tcgAbbr, color);
+    }));
+    console.log(results);
+    return {listings: results};
+}
 
-            // Perform search action
-            await page.waitForSelector('form[action="/search"][method="get"][role="search"]');
-            await page.fill('form[action="/search"][method="get"]input[type="search"][role="search"]', cardIdentifier);
-            await page.click('form[action="/search"][method="get"][role="search"]button[type="submit"]');
-            await page.waitForSelector('.list-view-items');
-
-            // Extract listing data
-            const listingData = await page.$$eval('.list-view-items > div', items => {
-                const data = [];
-                items.forEach(item => {
-                    if (item.innerHTML.length === 0) {
-                        const variants = item.getAttribute('data-product-variants');
-                        data.push(JSON.parse(variants));
+async function executeParser(url, cardIdentifier, tcg, tcgAbbr, color) {
+       let proc = execFile("/home/admin/apps/FaBCardSearch/backend/parser/target/release/parser", [url, cardIdentifier, tcg, tcgAbbr, color]);
+         let output = "";
+            let error = "";
+            proc.stdout.on('data', (data) => {
+                output += data;
+            });
+            proc.stderr.on('data', (data) => {
+                error += data;
+            });
+            return new Promise((resolve, reject) => {
+                proc.on('exit', (code) => {
+                    if (code === 0) {
+                        let spaceholder = { listings: output, url: url };
+                        resolve(spaceholder);
+                    } else {
+                        reject(error);
                     }
                 });
-                return data;
             });
-
-            const storeData = {
-                url: url,
-                listings: listingData
-            };
-	        listings.insert(storeData);
-        } catch (error) {
-            console.error('Error scraping site:', url, error);
-        }
-    }
-    await browser.close();
 }
 

@@ -42,19 +42,20 @@ function App() {
   const webpURLSuffix = ".webp";
   const backendURL = "https://fabcardshark.com/api";
 
+
   const setTCG = (value) => {
     setCards([]);
     setValue(value);
   }
 
-  const handleImageClick = async (cardData, storeUrls) => {
+  const handleImageClick = async (cardData, storeUrls, tcg, tcgAbbr) => {
     if (cardData.length === 0 || storeUrls.length === 0) {
       setErrorURL("Please enter at least one URL to search");
       return;
     }
     try {
       setErrorURL("");
-      const listingRequest = { storeUrls: cardData, cardData: storeUrls };
+      const listingRequest = { storeUrls: cardData, cardData: storeUrls, tcg: tcg, tcgAbbr: tcgAbbr };
       setScraping(true);
       fetch(backendURL + "/searchListings", {
         method: "POST",
@@ -68,6 +69,7 @@ function App() {
         .then((response) => response.json())
         .then((data) => {     
           setPageview(1);
+          console.log("Listing Data: " + data);
           setListings(data);
         })
         .finally(() => {
@@ -222,7 +224,7 @@ function App() {
                     {cards.searchResults?.map((card) => (
                       <Grid.Col className="card-info" span={"content"} p={25}>
                         <Card
-                          onClick={() => handleImageClick(urls, card)}
+                          onClick={() => handleImageClick(urls, card, value === "fab" ? "flesh and blood" : "magic: the gathering", value)}
                           style={{ cursor: "pointer" }}
                           p={25}
                         >
@@ -233,7 +235,7 @@ function App() {
                               radius={"md"}
                               h={250}
                               src={ value === "fab" ?
-                                LSSImageURL + card.defaultImage + webpURLSuffix : card.image_uris.normal
+                                LSSImageURL + card.defaultImage + webpURLSuffix : card.image_uris.normal ? card.image_uris.normal : "https://placehold.co/175x250?text=No+Image"
                               }
                               alt={card.name + "(" + card.cardIdentifier + ")"}
                               className="card-image"
@@ -255,7 +257,9 @@ function App() {
 
             {pageview && (
               <div className="listing-view">
-                <ListingTableView listings={listingsData} />
+                {listingsData.listings.map((listing) => (
+                  <ListingTableView listings={listing} />
+                ))}
               </div>
             )}
           </Container>
