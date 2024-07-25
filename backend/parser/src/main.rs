@@ -1,4 +1,7 @@
+use fake_useragent::UserAgents;
 use reqwest::blocking::Client;
+use reqwest::header::USER_AGENT;
+use reqwest::Method;
 use sonic_rs::{Deserialize, Serialize};
 use std::env;
 use std::io::{self, Error, Write};
@@ -35,11 +38,16 @@ struct CollectionResponse {
 fn main() -> Result<(), Error> {
     // args[1] = shopify url, args[2] = product name, args[3] = collection name, args[4] = collection name (abbreviated), args[5] = card color (optional)
     let args: Vec<String> = env::args().collect();
+    let user_agent = UserAgents::new();
     let client = Client::builder().user_agent("Mozilla/5.0").build().unwrap();
     let mut products: Vec<Product> = Vec::new();
     let mut page = 1;
     let mut collections: CollectionResponse = client
-        .get("".to_owned() + &args[1] + "collections.json?limit=250")
+        .request(
+            Method::GET,
+            "".to_owned() + &args[1] + "collections.json?limit=250",
+        )
+        .header(USER_AGENT, user_agent.random())
         .send()
         .expect("Failed to send request")
         .json::<CollectionResponse>()
