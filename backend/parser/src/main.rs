@@ -39,7 +39,7 @@ fn main() -> Result<(), Error> {
     // args[1] = shopify url, args[2] = product name, args[3] = collection name, args[4] = collection name (abbreviated), args[5] = card color (optional)
     let args: Vec<String> = env::args().collect();
     let user_agent = UserAgents::new();
-    let client = Client::builder().user_agent("Mozilla/5.0").build().unwrap();
+    let client = Client::builder().build().unwrap();
     let mut products: Vec<Product> = Vec::new();
     let mut page = 1;
     let mut collections: CollectionResponse = client
