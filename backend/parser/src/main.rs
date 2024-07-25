@@ -77,11 +77,21 @@ fn main() -> Result<(), Error> {
             break;
         }
         page += 1;
-        json_string.products.retain(|x| {
-            x.title.to_lowercase().contains(&args[2].to_lowercase())
-                && x.title.to_lowercase().contains(&args[5].to_lowercase())
+        json_string.products.retain(|x| { (x.title)
+            (x.title.to_lowercase().contains(&args[2].to_lowercase())
+                && (x.title.to_lowercase().contains(&args[5].to_lowercase()) || noColor(x.title.to_lowercase())))
         });
         products.extend(json_string.products);
     }
     return io::stdout().write_all(&sonic_rs::to_vec(&products)?);
+}
+
+fn noColor(title &str) {
+    const colors = ['yellow','red','blue'];
+    for color in colors {
+        if title.contains(color) {
+            return false;
+        }
+    }
+    return true;
 }
