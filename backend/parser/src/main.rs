@@ -36,12 +36,14 @@ struct CollectionResponse {
 }
 
 fn main() -> Result<(), Error> {
+    // all args must be lowercase
     // args[1] = shopify url, args[2] = product name, args[3] = collection name, args[4] = collection name (abbreviated), args[5] = card color (optional)
     let args: Vec<String> = env::args().collect();
     let user_agent = UserAgents::new();
     let client = Client::builder().build().unwrap();
     let mut products: Vec<Product> = Vec::new();
     let mut page = 1;
+    let title_lower = &args[2].to_lowercase();
     let mut collections: CollectionResponse = client
         .request(
             Method::GET,
@@ -53,8 +55,7 @@ fn main() -> Result<(), Error> {
         .json::<CollectionResponse>()
         .expect("Failed to parse json");
     collections.collections.retain(|x| {
-        (x.title.to_lowercase().contains(&args[3].to_lowercase())
-            || x.title.to_lowercase().contains(&args[4].to_lowercase()))
+        (x.title.to_lowercase().contains(&args[3]) || x.title.to_lowercase().contains(&args[4]))
             && x.title.to_lowercase().contains("singles")
     });
     loop {
@@ -79,20 +80,23 @@ fn main() -> Result<(), Error> {
         page += 1;
         if &args[4] == "fab" && args.len() == 6 {
             json_string.products.retain(|x| {
-                x.title.to_lowercase().contains(&args[2].to_lowercase())
-                    && x.title.to_lowercase().contains(&args[5].to_lowercase())
+                x.title.to_lowercase().contains(title_lower)
+                    && (x.title.to_lowercase().contains(&args[5])
+                        || no_color(&x.title.to_lowercase()))
             });
         } else {
-            json_string.products.retain(|x| x.title.to_lowercase().contains(&args[2].to_lowercase()));
+            json_string
+                .products
+                .retain(|x| x.title.to_lowercase().contains(title_lower));
         }
         products.extend(json_string.products);
     }
     return io::stdout().write_all(&sonic_rs::to_vec(&products)?);
 }
 
-fn noColor(title &str) {
-    const colors = ['yellow','red','blue'];
-    for color in colors {
+fn no_color(title: &str) -> bool {
+    const COLORS: [&str; 3] = ["yellow", "red", "blue"];
+    for color in COLORS {
         if title.contains(color) {
             return false;
         }
