@@ -159,7 +159,7 @@ function App() {
 
   return (
     <AppShell
-      header={{ height: 200, offset:true, collapsed:!pinned}}
+      header={{ height: 200, offset:false, collapsed:!pinned}}
       padding="md"
       withBorder={false}
       layout="alt"
@@ -218,7 +218,7 @@ function App() {
         </AppShell.Header>
         
         <AppShell.Main>
-          <Container size="lg">
+          <Container size="lg" pt={200}>
             {!pageview && (
               <Flex gap={"sm"} justify="center" overflow="hidden" p={25}>
                 <Flex align={"center"} direction="column" w="100%">
