@@ -14,7 +14,7 @@ import {
   Text,
   Title
 } from "@mantine/core";
-import { useDisclosure, useHeadroom } from "@mantine/hooks";
+import { useDisclosure, useHeadroom, useWindowScroll } from "@mantine/hooks";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { useState } from "react";
 import ListingTableView from "./ListingTableView";
@@ -36,6 +36,7 @@ function App() {
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure(false);
   const pinned = useHeadroom({fixedAt:"0"});
   const footerpinned = useHeadroom({fixedAt:"0%"})
+  const [scroll, scrollTo] = useWindowScroll();
 
   const LSSImageURL =
     "https://d2h5owxb2ypf43.cloudfront.net/cards/";
@@ -57,6 +58,7 @@ function App() {
       setErrorURL("");
       const listingRequest = { storeUrls: cardData, cardData: storeUrls, tcg: tcg, tcgAbbr: tcgAbbr };
       setScraping(true);
+      scrollTo({y: 0});
       fetch(backendURL + "/searchListings", {
         method: "POST",
         headers: {
@@ -91,6 +93,7 @@ function App() {
   const searchFaB = async (query) => {
     try {
       setLoading(true);
+      scrollTo({y: 0});
       const queryPayload = { query: query };
       const queryJSON = JSON.stringify(queryPayload);
       fetch(backendURL + "/searchCard", {
@@ -122,6 +125,7 @@ function App() {
   const searchMTG = async (query) => {
     try {
       setLoading(true);
+      scrollTo({y: 0});
       const queryPayload = { query: query };
       const queryJSON = JSON.stringify(queryPayload);
       fetch(backendURL + "/searchCardMTG", {
@@ -228,7 +232,7 @@ function App() {
                   </Center>
                   {errorURL && <Text size="lg" c="red">{errorURL}</Text>}
                   <Grid className="search-results">
-                  <LoadingOverlay visible={loading} zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} loaderProps={{ color: 'pink', type: 'bars' }}/>
+                  <LoadingOverlay visible={loading}  zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} loaderProps={{ color: 'pink', type: 'bars' }}/>
                   <LoadingOverlay visible={scraping} zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} loaderProps={{ color: 'pink', type: 'bars' }}/>
                     {cards.searchResults?.map((card) => (
                       <Grid.Col className="card-info" span={"content"} p={25}>
