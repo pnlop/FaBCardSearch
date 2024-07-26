@@ -77,10 +77,14 @@ fn main() -> Result<(), Error> {
             break;
         }
         page += 1;
-        json_string.products.retain(|x| { (x.title)
-            (x.title.to_lowercase().contains(&args[2].to_lowercase())
-                && (x.title.to_lowercase().contains(&args[5].to_lowercase()) || noColor(x.title.to_lowercase())))
-        });
+        if &args[4] == "fab" && args.len() == 6 {
+            json_string.products.retain(|x| {
+                x.title.to_lowercase().contains(&args[2].to_lowercase())
+                    && x.title.to_lowercase().contains(&args[5].to_lowercase())
+            });
+        } else {
+            json_string.products.retain(|x| x.title.to_lowercase().contains(&args[2].to_lowercase()));
+        }
         products.extend(json_string.products);
     }
     return io::stdout().write_all(&sonic_rs::to_vec(&products)?);
