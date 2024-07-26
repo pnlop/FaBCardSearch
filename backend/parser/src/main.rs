@@ -78,7 +78,7 @@ fn main() -> Result<(), Error> {
             break;
         }
         page += 1;
-        if &args[4] == "fab" && args.len() == 6 {
+        if &args[4] == "fab" && args.len() > 5 {
             json_string.products.retain(|x| {
                 x.title.to_lowercase().contains(title_lower)
                     && (x.title.to_lowercase().contains(&args[5])
