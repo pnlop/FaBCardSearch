@@ -6,7 +6,30 @@ import { cards } from "@flesh-and-blood/cards";
 import bodyParser from "body-parser";
 import { execFile, spawn } from "child_process";
 import axios from "axios";
-import { Readable } from "node:stream";
+import { chromium } from 'playwright';
+import loki from 'lokijs';
+import { MongoClient } from 'mongodb';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+// with this new architecture, we will leverage MongoDB to store website information for more efficient parsing
+// the schema will be as follows:
+// {
+//     "name": "Card Kingdom",
+//     "url": "https://www.cardkingdom.com",
+//     "parsable": "true",
+//     "hasSearchURL": "true",
+//     "searchURL": "https://www.cardkingdom.com/catalog/search?search=",
+//     "isShopify": "false",
+//     "hasFAB": "false",
+//     "hasMTG": "true"
+// }
+// the existing Rust parser will be used to parse FaB data from the websites using Shopify backends
+// the new parser will ideally be used to parse all other websites
+// the new parser will be written in TypeScript and use Playwright for scraping
+// the new parser will use Playwright (or the stored search URL) to search for the card and then scrape the listings
+// the listings HTML will be passed to an LLM model to extract the relevant information as structured JSON
+// the structured JSON will be returned to the frontend for display
+
 
 const app = express();
 app.use(bodyParser.json());
@@ -15,6 +38,25 @@ app.use(cors());
 app.listen(3000, () => {
     console.log('Server running on port 3000');
 });
+
+const client = new MongoClient(process.env.URI);
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
+
+const template = "Transform the following HTML into structured JSON with the following schema:\n" +
+"{\n" +
+"    listings: [\n" +
+"        {\n" +
+"            name: String,\n" +
+"            price: Number,\n" +
+"            condition: String,\n" +
+"            stock: Number,\n" +
+"            url: String\n" +
+"        }\n" +
+"    ]\n" +
+"}\n" +
+"HTML: ";
+
 
 app.post('/api/searchCard', (req, res) => {
     const searchQuery = req.body;
@@ -92,15 +134,38 @@ app.post('/api/searchListings', (req, res) => {
 
 async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr, color ) {
     // Perform scraping for each URL
-    console.log(cardIdentifier + " " + tcg + " " + tcgAbbr + " " + color);
-    const results = await Promise.all( urls.map((url) => {
-        return executeParser(url, cardIdentifier, tcg, tcgAbbr, color);
-    }));
-    console.log(results);
-    return {listings: results};
+    try {
+        await client.connect();
+        const database = client.db('cardshark');
+        const shops = database.collection('shops');
+        const results = await Promise.all( urls.map(async (url) => {
+            const query = { shop_url: new URL(url).hostname };
+            const result = await shops.findOne(query);
+            if (result === null)  {
+                //no result for this shop, use playwright
+                return playwrightScrape(url, cardIdentifier, tcg, tcgAbbr, color);
+            } else if (result.parsable === "false") {
+                //cannot be parsed, return null
+                return null;
+            } else if (tcgAbbr === "fab" && result.shopify === "true") {
+                //use the Rust parser
+                return shopifyScrape(url, cardIdentifier, tcg, tcgAbbr, color);
+            } else if (result.has_search_url === "true") {
+                //use playwright to search for the card and LLM to parse the listings
+                return searchURLScrape(url, cardIdentifier, tcg, tcgAbbr, color, result.search_url);
+            } else {
+                //use playwright to scrape the listings
+                return playwrightScrape(url, cardIdentifier, tcg, tcgAbbr, color);
+            }
+        }));
+        console.log(results);
+        return {listings: results};
+    } finally {
+        await client.close();
+    }
 }
 
-async function executeParser(url, cardIdentifier, tcg, tcgAbbr, color) {
+async function shopifyScrape(url, cardIdentifier, tcg, tcgAbbr, color) {
        let proc = execFile("/home/admin/apps/FaBCardSearch/backend/parser/target/release/parser", [url, cardIdentifier, tcg, tcgAbbr, color]);
          let output = "";
             let error = "";
@@ -121,4 +186,31 @@ async function executeParser(url, cardIdentifier, tcg, tcgAbbr, color) {
                 });
             });
 }
+
+async function playwrightScrape(url, cardIdentifier, tcg, tcgAbbr, color) {
+    const browser = await chromium.launch();
+    const context = await browser.newContext();
+    const page = await context.newPage();
+    try {
+        await page.goto(url);
+        await page.getByPlaceholder("Search").fill(cardIdentifier);
+        await page.keyboard.press('Enter');
+        // return the page content and scrape with LLM
+        const page_content = await page.content();
+        const result = await model.generateContent(template+page_content);
+        // return the structured JSON
+        return result.response.text();
+    } catch (error) {
+        console.error('Error scraping site:', url, error);
+    } finally {
+        await browser.close();
+    }
+}
+
+async function searchURLScrape(url, cardIdentifier, tcg, tcgAbbr, color, searchURL) {
+    let response = await axios.get(searchURL+cardIdentifier);
+    const result = await model.generateContent(template+response.data);
+    return result.response.text();
+}
+
 
