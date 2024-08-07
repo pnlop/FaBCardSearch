@@ -43,15 +43,14 @@ const client = new MongoClient(process.env.URI);
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
 
-const template = "Transform the following HTML into structured JSON with the following schema:\n" +
+const template = "Transform the following HTML store search results into structured JSON for storing product information with the following schema:\n" +
 "{\n" +
-"    listings: [\n" +
+"    title: String,\n" +
+"    variants: [\n" +
 "        {\n" +
 "            name: String,\n" +
 "            price: Number,\n" +
-"            condition: String,\n" +
-"            stock: Number,\n" +
-"            url: String\n" +
+"            available: Boolean,\n" +
 "        }\n" +
 "    ]\n" +
 "}\n" +
@@ -199,7 +198,7 @@ async function playwrightScrape(url, cardIdentifier, tcg, tcgAbbr, color) {
         const page_content = await page.content();
         const result = await model.generateContent(template+page_content);
         // return the structured JSON
-        return result.response.text();
+        return {listings: JSON.parse(result.response.text()), url: url};
     } catch (error) {
         console.error('Error scraping site:', url, error);
     } finally {
@@ -210,7 +209,7 @@ async function playwrightScrape(url, cardIdentifier, tcg, tcgAbbr, color) {
 async function searchURLScrape(url, cardIdentifier, tcg, tcgAbbr, color, searchURL) {
     let response = await axios.get(searchURL+cardIdentifier);
     const result = await model.generateContent(template+response.data);
-    return result.response.text();
+    return {listings: JSON.parse(result.response.text()), url: url};
 }
 
 
