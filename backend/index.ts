@@ -141,13 +141,13 @@ async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr, color ) {
                     //no result for this shop, use playwright
                     return playwrightScrape(url, cardIdentifier, tcg, tcgAbbr, color);
                 }
-            } else if (result.parsable === "false") {
+            } else if (result.parsable === false) {
                 //cannot be parsed, return null
                 return null;
-            } else if (tcgAbbr === "fab" && result.shopify === "true") {
+            } else if (tcgAbbr === "fab" && result.shopify === true) {
                 //use the Rust parser
                 return shopifyScrape(url, cardIdentifier, tcg, tcgAbbr, color);
-            } else if (result.has_search_url === "true") {
+            } else if (result.has_search_url === true) {
                 //use playwright to search for the card and LLM to parse the listings
                 return searchURLScrape(url, cardIdentifier, tcg, tcgAbbr, color, result.search_url);
             } else {
