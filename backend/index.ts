@@ -43,18 +43,7 @@ const client = new MongoClient(process.env.URI);
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
 
-const template = "Transform the following HTML store search results into structured JSON for storing product information with the following schema:\n" +
-"{\n" +
-"    title: String,\n" +
-"    variants: [\n" +
-"        {\n" +
-"            name: String,\n" +
-"            price: Number,\n" +
-"            available: Boolean,\n" +
-"        }\n" +
-"    ]\n" +
-"}\n" +
-"HTML: ";
+
 
 
 app.post('/api/searchCard', (req, res) => {
@@ -190,6 +179,18 @@ async function playwrightScrape(url, cardIdentifier, tcg, tcgAbbr, color) {
     const browser = await chromium.launch();
     const context = await browser.newContext();
     const page = await context.newPage();
+    const template = "You are an HTML parser. Transform the following HTML store search results for the card " + cardIdentifier + " into structured JSON for storing product information with the following schema:\n" +
+"{\n" +
+"    title: String,\n" +
+"    variants: [\n" +
+"        {\n" +
+"            name: String,\n" +
+"            price: Number,\n" +
+"            available: Boolean,\n" +
+"        }\n" +
+"    ]\n" +
+"}\n" +
+"HTML: ";
     try {
         await page.goto(url);
         await page.getByPlaceholder("Search").fill(cardIdentifier);
@@ -208,6 +209,18 @@ async function playwrightScrape(url, cardIdentifier, tcg, tcgAbbr, color) {
 
 async function searchURLScrape(url, cardIdentifier, tcg, tcgAbbr, color, searchURL) {
     let response = await axios.get(searchURL+cardIdentifier);
+    const template = "You are an HTML parser. Transform the following HTML store search results for the card " + cardIdentifier + " into structured JSON for storing product information with the following schema:\n" +
+"{\n" +
+"    title: String,\n" +
+"    variants: [\n" +
+"        {\n" +
+"            name: String,\n" +
+"            price: Number,\n" +
+"            available: Boolean,\n" +
+"        }\n" +
+"    ]\n" +
+"}\n" +
+"HTML: ";
     const result = await model.generateContent(template+response.data);
     return {listings: JSON.parse(result.response.text()), url: url};
 }
