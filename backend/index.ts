@@ -212,15 +212,12 @@ HTML: `;
         await page.getByPlaceholder("Search").first().fill(cardIdentifier);
         await page.keyboard.press('Enter');
         // return the page content and scrape with LLM
-        await page.waitForLoadState();
-        await page.waitForFunction('document.readyState === "complete"');
         const page_body = await page.evaluate('document.body.innerHTML');
-        console.log(page.url());
+        console.log(page_body);
         const result = await model.generateContent(template+page_body);
         // return the structured JSON
         console.log(result.response.text());
-        console.log(JSON.parse(result.response.text()));
-        return {listings: result.response.text(), url: url};
+        return {listings: JSON.parse(result.response.text()), url: url};
     } catch (error) {
         console.error('Error scraping site:', url, error);
     } finally {
