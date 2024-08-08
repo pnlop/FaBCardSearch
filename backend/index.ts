@@ -233,6 +233,7 @@ async function searchURLScrape(url, cardIdentifier, tcg, tcgAbbr, color, searchU
 "}\n" +
 "HTML: ";
     const result = await model.generateContent(template+response.data);
+    console.log(result.response.text());
     return {listings: JSON.parse(result.response.text()), url: url};
 }
 
