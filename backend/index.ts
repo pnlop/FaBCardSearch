@@ -193,7 +193,7 @@ async function playwrightScrape(url, cardIdentifier, tcg, tcgAbbr, color) : Prom
         title: String,
         variants: [
             {
-                name: String,
+                title: String,
                 price: Number,
                 available: Boolean
             }
@@ -235,7 +235,7 @@ async function searchURLScrape(url, cardIdentifier, tcg, tcgAbbr, color, searchU
         title: String,
         variants: [
             {
-                name: String,
+                title: String,
                 price: Number,
                 available: Boolean
             }
