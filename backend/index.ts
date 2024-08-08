@@ -186,7 +186,7 @@ async function playwrightScrape(url, cardIdentifier, tcg, tcgAbbr, color) : Prom
     const browser = await chromium.launch();
     const context = await browser.newContext();
     const page = await context.newPage();
-    const template = "You are an HTML parser that returns exclusively well formed JSON and nothing else, all output should begin with '{' and end with '}'. Transform the following HTML store search results for the card " + cardIdentifier + " into structured JSON for storing product information with the following schema:\n" +
+    const template = "You are an HTML parser that returns exclusively well formed JSON and nothing else, all output should begin with '[' and end with ']'. Transform the following HTML store search results for the card " + cardIdentifier + " into structured JSON for storing product information with the following schema:\n" +
 `
 [
     {
@@ -228,7 +228,7 @@ async function searchURLScrape(url, cardIdentifier, tcg, tcgAbbr, color, searchU
         cardIdentifier = cardIdentifier + "-" + color;
     }
     let response = await axios.get(searchURL+cardIdentifier);
-    const template = "You are an HTML parser that returns exclusively well formed JSON and nothing else, all output should begin with '{' and end with '}'. Transform the following HTML store search results for the card " + cardIdentifier + " into structured JSON for storing product information with the following schema:\n" +
+    const template = "You are an HTML parser that returns exclusively well formed JSON and nothing else, all output should begin with '[' and end with ']'. Transform the following HTML store search results for the card " + cardIdentifier + " into structured JSON for storing product information with the following schema:\n" +
 `
 [
     {
