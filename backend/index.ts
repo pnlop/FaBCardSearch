@@ -200,6 +200,9 @@ async function playwrightScrape(url, cardIdentifier, tcg, tcgAbbr, color) : Prom
         ]
     }
 ]
+You should attempt to capture every product which contains the card identifier in the title, and extract the title, price, and availability.
+If a product has multiple variants, you should capture each variant's title, price, and availability.
+If "variants" is not applicable to the store, you should put the product's title, price, and availability in a single-element array.
 HTML: `;
     try {
         if (color !== "") {
@@ -209,6 +212,7 @@ HTML: `;
         await page.getByPlaceholder("Search").first().fill(cardIdentifier);
         await page.keyboard.press('Enter');
         // return the page content and scrape with LLM
+        await page.waitForLoadState();
         const page_body = await page.evaluate('document.body.innerHTML');
         console.log(page.url());
         const result = await model.generateContent(template+page_body);
@@ -242,6 +246,9 @@ async function searchURLScrape(url, cardIdentifier, tcg, tcgAbbr, color, searchU
         ]
     }
 ]
+You should attempt to capture every product which contains the card identifier in the title, and extract the title, price, and availability.
+If a product has multiple variants, you should capture each variant's title, price, and availability.
+If "variants" is not applicable to the store, you should put the product's title, price, and availability in a single-element array.
 HTML: `;
     const result = await model.generateContent(template+response.data);
     console.log(result.response.text());
