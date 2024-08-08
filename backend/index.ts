@@ -213,7 +213,7 @@ HTML: `;
         await page.keyboard.press('Enter');
         // return the page content and scrape with LLM
         const page_body = await page.evaluate('document.body.innerHTML');
-        console.log(page_body);
+        console.log(page.url());
         const result = await model.generateContent(template+page_body);
         // return the structured JSON
         console.log(result.response.text());
