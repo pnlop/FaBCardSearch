@@ -6,3 +6,4 @@ package-lock.json
 *.lock
 target
 .env
+test.js
