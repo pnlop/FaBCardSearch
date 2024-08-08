@@ -208,6 +208,9 @@ If a product has multiple variants, you should capture each variant's title, pri
 If "variants" is not applicable to the store, you should put the product's title, price, and availability in a single-element array.
 HTML: `;
     try {
+        if (color !== "") {
+            cardIdentifier = cardIdentifier + " " + color;
+        }
         await page.goto(url);
         await page.getByPlaceholder("Search").first().fill(cardIdentifier);
         await page.keyboard.press('Enter');
@@ -229,6 +232,9 @@ HTML: `;
 }
 
 async function searchURLScrape(url, cardIdentifier, tcg, tcgAbbr, color, searchURL) {
+    if (color !== "") {
+        cardIdentifier = cardIdentifier + "-" + color;
+    }
     let response = await axios.get(searchURL+cardIdentifier);
     const template = "You are an HTML parser that returns exclusively well formed JSON and nothing else, all output should begin with '[' and end with ']'. Transform the following HTML store search results for the card " + cardIdentifier + " into structured JSON for storing product information with the following schema:\n" +
 `
