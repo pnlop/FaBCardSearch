@@ -197,12 +197,11 @@ async function playwrightScrape(url, cardIdentifier, tcg, tcgAbbr, color) {
         await page.getByPlaceholder("Search").fill(cardIdentifier);
         await page.keyboard.press('Enter');
         // return the page content and scrape with LLM
-        const page_content = await page.content();
-        console.log(page_content)
-        const result = await model.generateContent(template+page_content);
+        const page_body = await page.evaluate('document.body.innerHTML');
+        console.log(page_body);
+        const result = await model.generateContent(template+page_body);
         // return the structured JSON
         console.log(result.response.text());
-        console.log(page.url());
         return {listings: JSON.parse(result.response.text()), url: url};
     } catch (error) {
         console.error('Error scraping site:', url, error);
