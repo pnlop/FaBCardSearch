@@ -128,6 +128,7 @@ async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr, color ) {
         const results = await Promise.all( urls.map(async (url) => {
             const query = { shop_url: new URL(url).hostname };
             const result = await shops.findOne(query);
+            console.log("Query: "+ JSON.stringify(result));
             if (result === null)  {
                 //no result for this shop, use playwright
                 return playwrightScrape(url, cardIdentifier, tcg, tcgAbbr, color);
@@ -198,6 +199,7 @@ async function playwrightScrape(url, cardIdentifier, tcg, tcgAbbr, color) {
         const page_content = await page.content();
         const result = await model.generateContent(template+page_content);
         // return the structured JSON
+        console.log(result.response.text());
         return {listings: JSON.parse(result.response.text()), url: url};
     } catch (error) {
         console.error('Error scraping site:', url, error);
