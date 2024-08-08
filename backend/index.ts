@@ -191,7 +191,7 @@ async function playwrightScrape(url, cardIdentifier, tcg, tcgAbbr, color) {
     const page = await context.newPage();
     const template = "You are an HTML parser that returns exclusively well formed JSON and nothing else, all output should begin with '{' and end with '}'. Transform the following HTML store search results for the card " + cardIdentifier + " into structured JSON for storing product information with the following schema:\n" +
 `
-{ listings: [
+[
     {
         title: String,
         variants: [
@@ -203,7 +203,6 @@ async function playwrightScrape(url, cardIdentifier, tcg, tcgAbbr, color) {
         ]
     }
 ]
-}
 HTML: `;
     try {
         await page.goto(url);
@@ -216,7 +215,7 @@ HTML: `;
         // return the structured JSON
         console.log(result.response.text());
         console.log(JSON.parse(result.response.text()));
-        return {listings: JSON.parse(result.response.text()), url: url};
+        return {listings: result.response.text(), url: url};
     } catch (error) {
         console.error('Error scraping site:', url, error);
     } finally {
@@ -228,7 +227,7 @@ async function searchURLScrape(url, cardIdentifier, tcg, tcgAbbr, color, searchU
     let response = await axios.get(searchURL+cardIdentifier);
     const template = "You are an HTML parser that returns exclusively well formed JSON and nothing else, all output should begin with '{' and end with '}'. Transform the following HTML store search results for the card " + cardIdentifier + " into structured JSON for storing product information with the following schema:\n" +
 `
-{ listings: [
+[
     {
         title: String,
         variants: [
@@ -240,12 +239,11 @@ async function searchURLScrape(url, cardIdentifier, tcg, tcgAbbr, color, searchU
         ]
     }
 ]
-}
 HTML: `;
     const result = await model.generateContent(template+response.data);
     console.log(result.response.text());
     console.log(JSON.parse(result.response.text()));
-    return {listings: JSON.parse(result.response.text()), url: url};
+    return {listings: result.response.text(), url: url};
 }
 
 
