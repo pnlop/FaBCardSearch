@@ -168,6 +168,7 @@ async function shopifyScrape(url, cardIdentifier, tcg, tcgAbbr, color) {
                 proc.on('exit', (code) => {
                     if (code === 0) {
                         let spaceholder = { listings: output, url: url };
+                        console.log(spaceholder);
                         resolve(spaceholder);
                     } else {
                         reject(error);
