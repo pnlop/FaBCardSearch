@@ -228,7 +228,7 @@ HTML: `;
     }
 }
 
-async function searchURLScrape(url, cardIdentifier, tcg, tcgAbbr, color, searchURL) : Promise<object> {
+async function searchURLScrape(url, cardIdentifier, tcg, tcgAbbr, color, searchURL) {
     if (color !== "") {
         cardIdentifier = cardIdentifier + "-" + color;
     }
