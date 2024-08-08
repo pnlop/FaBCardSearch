@@ -197,6 +197,7 @@ async function playwrightScrape(url, cardIdentifier, tcg, tcgAbbr, color) {
         await page.keyboard.press('Enter');
         // return the page content and scrape with LLM
         const page_content = await page.content();
+        console.log(page_content)
         const result = await model.generateContent(template+page_content);
         // return the structured JSON
         console.log(result.response.text());
