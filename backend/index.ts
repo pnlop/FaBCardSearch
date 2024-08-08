@@ -215,6 +215,7 @@ HTML: `;
         const result = await model.generateContent(template+page_body);
         // return the structured JSON
         console.log(result.response.text());
+        console.log(JSON.parse(result.response.text()));
         return {listings: JSON.parse(result.response.text()), url: url};
     } catch (error) {
         console.error('Error scraping site:', url, error);
@@ -243,6 +244,7 @@ async function searchURLScrape(url, cardIdentifier, tcg, tcgAbbr, color, searchU
 HTML: `;
     const result = await model.generateContent(template+response.data);
     console.log(result.response.text());
+    console.log(JSON.parse(result.response.text()));
     return {listings: JSON.parse(result.response.text()), url: url};
 }
 
