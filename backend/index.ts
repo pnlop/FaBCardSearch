@@ -202,7 +202,7 @@ async function playwrightScrape(url, cardIdentifier, tcg, tcgAbbr, color) {
 "HTML: ";
     try {
         await page.goto(url);
-        await page.getByPlaceholder("Search").fill(cardIdentifier);
+        await page.getByPlaceholder("Search").first().fill(cardIdentifier);
         await page.keyboard.press('Enter');
         // return the page content and scrape with LLM
         const page_body = await page.evaluate('document.body.innerHTML');
