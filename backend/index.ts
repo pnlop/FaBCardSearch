@@ -10,7 +10,6 @@ import { chromium } from 'playwright';
 import loki from 'lokijs';
 import { MongoClient } from 'mongodb';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import dotenv from "dotenv";
 
 // with this new architecture, we will leverage MongoDB to store website information for more efficient parsing
 // the schema will be as follows:
@@ -31,7 +30,6 @@ import dotenv from "dotenv";
 // the listings HTML will be passed to an LLM model to extract the relevant information as structured JSON
 // the structured JSON will be returned to the frontend for display
 
-dotenv.config();
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
