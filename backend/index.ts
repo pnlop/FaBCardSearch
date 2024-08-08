@@ -124,8 +124,8 @@ async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr, color ) {
     // Perform scraping for each URL
     try {
         await client.connect();
-        const database = client.db('cardshark');
-        const shops = database.collection('shops');
+        const database = client.db('shops');
+        const shops = database.collection('shop_info');
         const results = await Promise.all( urls.map(async (url) => {
             const query = { store_url: new URL(url).hostname };
             console.log("Query: "+ JSON.stringify(query));
