@@ -250,8 +250,7 @@ If "variants" is not applicable to the store, you should put the product's title
 HTML: `;
     const result = await model.generateContent(template+response.data);
     console.log(result.response.text());
-    console.log(JSON.parse(result.response.text()));
-    return {listings: result.response.text(), url: url};
+    return {listings: JSON.parse(result.response.text()), url: url};
 }
 
 
