@@ -127,7 +127,8 @@ async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr, color ) {
         const database = client.db('cardshark');
         const shops = database.collection('shops');
         const results = await Promise.all( urls.map(async (url) => {
-            const query = { shop_url: new URL(url).hostname };
+            const query = { store_url: new URL(url).hostname };
+            console.log("Query: "+ JSON.stringify(query));
             const result = await shops.findOne(query);
             console.log("Query: "+ JSON.stringify(result));
             if (result === null)  {
