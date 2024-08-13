@@ -10,6 +10,7 @@ import { chromium } from 'playwright';
 import loki from 'lokijs';
 import { MongoClient } from 'mongodb';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { ok } from "assert";
 
 // with this new architecture, we will leverage MongoDB to store website information for more efficient parsing
 // the schema will be as follows:
@@ -130,8 +131,15 @@ async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr, color ) {
             const result = await shops.findOne(query);
             console.log("Query: "+ JSON.stringify(result));
             if (result === null)  {
-                //no result for this shop, use playwright
-                return playwrightScrape(url, cardIdentifier, tcg, tcgAbbr, color);
+                //try shopify request
+                let response = await axios.get(url+"collections.json");
+                if (response.status === 200) {
+                    shops.insertOne({store_name: new URL(url).hostname, store_url:new URL(url).hostname, parsable:true, shopify:true, has_search_url: false, fab: false, mtg: false, search_url:""});
+                    return shopifyScrape(url, cardIdentifier, tcg, tcgAbbr, color);
+                } else {
+                    //no result for this shop, use playwright
+                    return playwrightScrape(url, cardIdentifier, tcg, tcgAbbr, color);
+                }
             } else if (result.parsable === "false") {
                 //cannot be parsed, return null
                 return null;
