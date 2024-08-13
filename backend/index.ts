@@ -124,10 +124,11 @@ async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr, color ) {
     // Perform scraping for each URL
     try {
         await client.connect();
-        const database = client.db('cardshark');
-        const shops = database.collection('shops');
+        const database = client.db('shops');
+        const shops = database.collection('shop_info');
         const results = await Promise.all( urls.map(async (url) => {
-            const query = { shop_url: new URL(url).hostname };
+            const query = { store_url: new URL(url).hostname };
+            console.log("Query: "+ JSON.stringify(query));
             const result = await shops.findOne(query);
             console.log("Query: "+ JSON.stringify(result));
             if (result === null)  {
@@ -143,10 +144,10 @@ async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr, color ) {
             } else if (result.parsable === "false") {
                 //cannot be parsed, return null
                 return null;
-            } else if (tcgAbbr === "fab" && result.shopify === "true") {
+            } else if (tcgAbbr === "fab" && result.shopify === true) {
                 //use the Rust parser
                 return shopifyScrape(url, cardIdentifier, tcg, tcgAbbr, color);
-            } else if (result.has_search_url === "true") {
+            } else if (result.has_search_url === true) {
                 //use playwright to search for the card and LLM to parse the listings
                 return searchURLScrape(url, cardIdentifier, tcg, tcgAbbr, color, result.search_url);
             } else {
@@ -175,6 +176,7 @@ async function shopifyScrape(url, cardIdentifier, tcg, tcgAbbr, color) {
                 proc.on('exit', (code) => {
                     if (code === 0) {
                         let spaceholder = { listings: output, url: url };
+                        console.log(spaceholder);
                         resolve(spaceholder);
                     } else {
                         reject(error);
@@ -187,30 +189,41 @@ async function playwrightScrape(url, cardIdentifier, tcg, tcgAbbr, color) {
     const browser = await chromium.launch();
     const context = await browser.newContext();
     const page = await context.newPage();
-    const template = "You are an HTML parser. Transform the following HTML store search results for the card " + cardIdentifier + " into structured JSON for storing product information with the following schema:\n" +
-"{\n" +
-"    title: String,\n" +
-"    variants: [\n" +
-"        {\n" +
-"            name: String,\n" +
-"            price: Number,\n" +
-"            available: Boolean,\n" +
-"        }\n" +
-"    ]\n" +
-"}\n" +
-"HTML: ";
+    const template = "You are an HTML parser that returns exclusively well formed JSON and nothing else, all output should begin with '[' and end with ']'. Transform the following HTML store search results for the card " + cardIdentifier + " into structured JSON for storing product information with the following schema:\n" +
+`
+[
+    {
+        title: String,
+        variants: [
+            {
+                title: String,
+                price: Number,
+                available: Boolean
+            }
+        ]
+    }
+]
+You should attempt to capture every product which contains the card identifier in the title, and extract the title, price, and availability.
+If a product has multiple variants, you should capture each variant's title, price, and availability.
+If "variants" is not applicable to the store, you should put the product's title, price, and availability in a single-element array.
+HTML: `;
     try {
+        if (color !== "") {
+            cardIdentifier = cardIdentifier + " " + color;
+        }
         await page.goto(url);
-        await page.getByPlaceholder("Search").fill(cardIdentifier);
+        await page.getByPlaceholder("Search").first().fill(cardIdentifier);
         await page.keyboard.press('Enter');
         // return the page content and scrape with LLM
-        const page_content = await page.content();
-        console.log(page_content)
-        const result = await model.generateContent(template+page_content);
+        await page.waitForLoadState();
+        await page.waitForFunction('document.readyState === "complete"');
+        const page_body = await page.evaluate('document.body.innerHTML');
+        console.log(page.url());
+        const result = await model.generateContent(template+page_body);
         // return the structured JSON
         console.log(result.response.text());
-        console.log(page.url());
-        return {listings: JSON.parse(result.response.text()), url: url};
+        console.log(JSON.parse(result.response.text()));
+        return {listings: result.response.text(), url: url};
     } catch (error) {
         console.error('Error scraping site:', url, error);
     } finally {
@@ -219,21 +232,32 @@ async function playwrightScrape(url, cardIdentifier, tcg, tcgAbbr, color) {
 }
 
 async function searchURLScrape(url, cardIdentifier, tcg, tcgAbbr, color, searchURL) {
+    if (color !== "") {
+        cardIdentifier = cardIdentifier + "-" + color;
+    }
     let response = await axios.get(searchURL+cardIdentifier);
-    const template = "You are an HTML parser. Transform the following HTML store search results for the card " + cardIdentifier + " into structured JSON for storing product information with the following schema:\n" +
-"{\n" +
-"    title: String,\n" +
-"    variants: [\n" +
-"        {\n" +
-"            name: String,\n" +
-"            price: Number,\n" +
-"            available: Boolean,\n" +
-"        }\n" +
-"    ]\n" +
-"}\n" +
-"HTML: ";
+    const template = "You are an HTML parser that returns exclusively well formed JSON and nothing else, all output should begin with '[' and end with ']'. Transform the following HTML store search results for the card " + cardIdentifier + " into structured JSON for storing product information with the following schema:\n" +
+`
+[
+    {
+        title: String,
+        variants: [
+            {
+                title: String,
+                price: Number,
+                available: Boolean
+            }
+        ]
+    }
+]
+You should attempt to capture every product which contains the card identifier in the title, and extract the title, price, and availability.
+If a product has multiple variants, you should capture each variant's title, price, and availability.
+If "variants" is not applicable to the store, you should put the product's title, price, and availability in a single-element array.
+HTML: `;
     const result = await model.generateContent(template+response.data);
-    return {listings: JSON.parse(result.response.text()), url: url};
+    console.log(result.response.text());
+    console.log(JSON.parse(result.response.text()));
+    return {listings: result.response.text(), url: url};
 }
 
 
