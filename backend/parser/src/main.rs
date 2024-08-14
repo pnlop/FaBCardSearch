@@ -59,21 +59,36 @@ fn main() -> Result<(), Error> {
             && x.title.to_lowercase().contains("singles")
     });
     loop {
-        let mut json_string: ProductResponse = client
-            .request(
-                Method::GET,
-                "".to_owned()
-                    + &args[1]
-                    + "collections/"
-                    + collections.collections[0].handle.as_str()
-                    + "/products.json?limit=250&page="
-                    + &page.to_string(),
-            )
-            .header(USER_AGENT, user_agent.random())
-            .send()
-            .expect("Failed to send request")
-            .json::<ProductResponse>()
-            .expect("Failed to parse json");
+        let mut json_string: ProductResponse = if collections.collections.len == 0 {
+                .request(
+                    Method::GET,
+                    "".to_owned()
+                        + &args[1]
+                        + "products.json?limit=250&page="
+                        + &page.to_string(),
+                )
+                .header(USER_AGENT, user_agent.random())
+                .send()
+                .expect("Failed to send request")
+                .json::<ProductResponse>()
+                .expect("Failed to parse json");
+        } else {
+            let mut json_string: ProductResponse = client
+                .request(
+                    Method::GET,
+                    "".to_owned()
+                        + &args[1]
+                        + "collections/"
+                        + collections.collections[0].handle.as_str()
+                        + "/products.json?limit=250&page="
+                        + &page.to_string(),
+                )
+                .header(USER_AGENT, user_agent.random())
+                .send()
+                .expect("Failed to send request")
+                .json::<ProductResponse>()
+                .expect("Failed to parse json");
+        }
         if json_string.products.len() == 0 {
             break;
         }
