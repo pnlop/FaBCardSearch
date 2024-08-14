@@ -44,7 +44,7 @@ fn main() -> Result<(), Error> {
     let mut products: Vec<Product> = Vec::new();
     let mut page = 1;
     let title_lower = &args[2].to_lowercase();
-    let mut collections: Vec<Collection> : Vec::new();
+    let mut collections: Vec<Collection> = Vec::new();
     loop {
         let mut collection: CollectionResponse = client
             .request(
