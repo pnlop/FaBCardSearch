@@ -73,7 +73,6 @@ fn main() -> Result<(), Error> {
                 .json::<ProductResponse>()
                 .expect("Failed to parse json");
         } else {
-            let mut json_string: ProductResponse = client
                 .request(
                     Method::GET,
                     "".to_owned()
@@ -88,7 +87,7 @@ fn main() -> Result<(), Error> {
                 .expect("Failed to send request")
                 .json::<ProductResponse>()
                 .expect("Failed to parse json");
-        }
+        };
         if json_string.products.len() == 0 {
             break;
         }
