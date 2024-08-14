@@ -68,7 +68,7 @@ fn main() -> Result<(), Error> {
         });
     page = 1;
     loop {
-        let mut json_string: ProductResponse = if collections.collections.len() == 0 { 
+        let mut json_string: ProductResponse = if collections.len() == 0 { 
             client.request(
                     Method::GET,
                     "".to_owned()
@@ -87,7 +87,7 @@ fn main() -> Result<(), Error> {
                     "".to_owned()
                         + &args[1]
                         + "collections/"
-                        + collections.collections[0].handle.as_str()
+                        + collections[0].handle.as_str()
                         + "/products.json?limit=250&page="
                         + &page.to_string(),
                 )
