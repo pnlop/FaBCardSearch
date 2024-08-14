@@ -131,7 +131,7 @@ async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr, color ) {
             console.log("Query: "+ JSON.stringify(query));
             const result = await shops.findOne(query);
             console.log("Query: "+ JSON.stringify(result));
-            let shopName = result.store_name === "PLACEHOLDER" ? url : result.store_name;
+            let shopName = result?.store_name === "PLACEHOLDER" ? url : result.store_name;
             if (result === null)  {
                 //try shopify request
                 let response = await axios.get(url+"collections.json");
@@ -229,7 +229,7 @@ HTML: `;
         // return the structured JSON
         console.log(result.response.text());
         console.log(JSON.parse(result.response.text()));
-        return {listings: result.response.text(), url: url};
+        return {listings: result.response.text().replace(/```json\s*|```/g, '').trim(), url: url};
     } catch (error) {
         console.error('Error scraping site:', url, error);
     } finally {
@@ -263,7 +263,7 @@ HTML: `;
     const result = await model.generateContent(template+response.data);
     console.log(result.response.text());
     console.log(JSON.parse(result.response.text()));
-    return {listings: result.response.text(), url: url};
+    return {listings: result.response.text().replace(/```json\s*|```/g, '').trim(), url: url};
 }
 
 
