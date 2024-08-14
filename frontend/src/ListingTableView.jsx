@@ -7,7 +7,6 @@ const ListingTableView = (listings) => {
         return null;
     }
     console.log("list: " + JSON.stringify(listings));
-    console.log(myUrl);
     console.log(JSON.parse(listings.listings.listings));
     return (
         <div className="listing-table-view">
