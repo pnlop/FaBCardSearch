@@ -3,7 +3,7 @@ import { Anchor, Card, Table } from "@mantine/core";
 import React from "react";
 import "./ListingTable.css";
 //turn listing table into dynamic table generator per store, iterate over stores/listings in wrapper component
-const ListingTable = (listing) => {
+const ListingTable = (listing, url) => {
   if (!listing || !listing.listing.variants[0].available) {
     return null;
   }
@@ -26,7 +26,7 @@ const ListingTable = (listing) => {
 
   return (
     <Card>
-      <Anchor href={listing.listing.url} target="_blank" rel="noreferrer">Go to store</Anchor>
+      <Anchor href={url} target="_blank" rel="noreferrer">Go to store</Anchor>
       <Table className="listing-table">
         <Table.Thead>
           <Table.Tr>

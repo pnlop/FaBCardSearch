@@ -12,7 +12,7 @@ const ListingTableView = (listings) => {
         <div className="listing-table-view">
             <Text size="xl" fw={700}>{listings.listings.shopName}</Text>
             {JSON.parse(listings.listings.listings).map(listing => (
-            <ListingTable listing={listing} />
+            <ListingTable listing={listing} url={listings.listings.url}/>
         ))}
         </div>
     );
