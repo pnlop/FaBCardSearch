@@ -136,23 +136,33 @@ async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr, color ) {
                 let response = await axios.get(url+"collections.json");
                 if (response.status === 200) {
                     shops.insertOne({store_name: new URL(url).hostname, store_url:new URL(url).hostname, parsable:true, shopify:true, has_search_url: false, fab: false, mtg: false, search_url:""});
-                    return shopifyScrape(url, cardIdentifier, tcg, tcgAbbr, color);
+                    let scrape = await shopifyScrape(url, cardIdentifier, tcg, tcgAbbr, color);
+                    let shopName = result.shop_name === "PLACEHOLDER" ? url : result.shop_name;
+                    return {...scrape, shopName};
                 } else {
                     //no result for this shop, use playwright
-                    return playwrightScrape(url, cardIdentifier, tcg, tcgAbbr, color);
+                    let scrape = playwrightScrape(url, cardIdentifier, tcg, tcgAbbr, color);
+                    let shopName = result.shop_name === "PLACEHOLDER" ? url : result.shop_name;
+                    return {...scrape, shopName};
                 }
             } else if (result.parsable === false) {
                 //cannot be parsed, return null
                 return null;
             } else if (tcgAbbr === "fab" && result.shopify === true) {
                 //use the Rust parser
-                return shopifyScrape(url, cardIdentifier, tcg, tcgAbbr, color);
+                let scrape = await shopifyScrape(url, cardIdentifier, tcg, tcgAbbr, color);
+                let shopName = result.shop_name === "PLACEHOLDER" ? url : result.shop_name;
+                return {...scrape, shopName};
             } else if (result.has_search_url === true) {
                 //use playwright to search for the card and LLM to parse the listings
-                return searchURLScrape(url, cardIdentifier, tcg, tcgAbbr, color, result.search_url);
+                let scrape = searchURLScrape(url, cardIdentifier, tcg, tcgAbbr, color, result.search_url);
+                let shopName = result.shop_name === "PLACEHOLDER" ? url : result.shop_name;
+                return {...scrape, shopName};
             } else {
                 //use playwright to scrape the listings
-                return playwrightScrape(url, cardIdentifier, tcg, tcgAbbr, color);
+                let scrape = playwrightScrape(url, cardIdentifier, tcg, tcgAbbr, color);
+                let shopName = result.shop_name === "PLACEHOLDER" ? url : result.shop_name;
+                return {...scrape, shopName};
             }
         }));
         console.log(results);
@@ -162,7 +172,7 @@ async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr, color ) {
     }
 }
 
-async function shopifyScrape(url, cardIdentifier, tcg, tcgAbbr, color) {
+async function shopifyScrape(url, cardIdentifier, tcg, tcgAbbr, color) : Promise<object> {
        let proc = execFile("/home/admin/apps/FaBCardSearch/backend/parser/target/release/parser", [url, cardIdentifier, tcg, tcgAbbr, color]);
          let output = "";
             let error = "";
@@ -185,7 +195,7 @@ async function shopifyScrape(url, cardIdentifier, tcg, tcgAbbr, color) {
             });
 }
 
-async function playwrightScrape(url, cardIdentifier, tcg, tcgAbbr, color) {
+async function playwrightScrape(url, cardIdentifier, tcg, tcgAbbr, color) : Promise<object> {
     const browser = await chromium.launch();
     const context = await browser.newContext();
     const page = await context.newPage();
@@ -231,7 +241,7 @@ HTML: `;
     }
 }
 
-async function searchURLScrape(url, cardIdentifier, tcg, tcgAbbr, color, searchURL) {
+async function searchURLScrape(url, cardIdentifier, tcg, tcgAbbr, color, searchURL) : Promise<object> {
     if (color !== "") {
         cardIdentifier = cardIdentifier + "-" + color;
     }
