@@ -8,6 +8,7 @@ const ListingTable = (listing, url) => {
     return null;
   }
   console.log("listing: " + JSON.stringify(listing));
+  console.log(url);
   const rows = listing.listing.variants.map((variant) => {
       if (!variant.available) {
         return null;
@@ -26,7 +27,7 @@ const ListingTable = (listing, url) => {
 
   return (
     <Card>
-      <Anchor href={url} target="_blank" rel="noreferrer">Go to store</Anchor>
+      <Anchor href={JSON.stringify(url)} target="_blank" rel="noreferrer">Go to store</Anchor>
       <Table className="listing-table">
         <Table.Thead>
           <Table.Tr>
