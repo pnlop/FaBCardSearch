@@ -15,7 +15,7 @@ const ListingTable = ({listing, url}) => {
       }
       return (
         <Table.Tr key={variant.title} hidden={!variant.available}>
-          <Table.Td>{listing.listing.title}</Table.Td>
+          <Table.Td>{listing.title}</Table.Td>
           <Table.Td>
             {variant.price}
           </Table.Td>
