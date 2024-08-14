@@ -46,7 +46,7 @@ fn main() -> Result<(), Error> {
     let title_lower = &args[2].to_lowercase();
     let mut collections: Vec<Collection> = Vec::new();
     loop {
-        let mut collection: CollectionResponse = client
+        let collection: CollectionResponse = client
             .request(
                 Method::GET,
                 "".to_owned() + &args[1] + "collections.json?limit=250&page=" + &page.to_string(),
@@ -68,7 +68,7 @@ fn main() -> Result<(), Error> {
         });
     page = 1;
     loop {
-        let mut json_string: ProductResponse = if collections.len() == 0 { 
+        let json_string: ProductResponse = if collections.len() == 0 { 
             client.request(
                     Method::GET,
                     "".to_owned()
