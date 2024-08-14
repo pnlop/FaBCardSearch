@@ -132,14 +132,27 @@ async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr, color ) {
             const result = await shops.findOne(query);
             console.log("Query: "+ JSON.stringify(result));
             if (result === null)  {
-                //no result for this shop, use playwright
-                return playwrightScrape(url, cardIdentifier, tcg, tcgAbbr, color);
-            } else if (result.parsable === false) {
+                //try shopify request
+                let response = await axios.get(url+"collections.json");
+                if (response.status === 200) {
+                    shops.insertOne({store_name: new URL(url).hostname, store_url:new URL(url).hostname, parsable:true, shopify:true, has_search_url: false, fab: false, mtg: false, search_url:""});
+                    let scrape = await shopifyScrape(url, cardIdentifier, tcg, tcgAbbr, color);
+                    let shopName = result.shop_name === "PLACEHOLDER" ? url : result.shop_name;
+                    return {...scrape, shopName};
+                } else {
+                    //no result for this shop, use playwright
+                    let scrape = playwrightScrape(url, cardIdentifier, tcg, tcgAbbr, color);
+                    let shopName = result.shop_name === "PLACEHOLDER" ? url : result.shop_name;
+                    return {...scrape, shopName};
+                }
+            } else if (result.parsable === "false") {
                 //cannot be parsed, return null
                 return null;
             } else if (tcgAbbr === "fab" && result.shopify === true) {
                 //use the Rust parser
-                return shopifyScrape(url, cardIdentifier, tcg, tcgAbbr, color);
+                let scrape = await shopifyScrape(url, cardIdentifier, tcg, tcgAbbr, color);
+                let shopName = result.shop_name === "PLACEHOLDER" ? url : result.shop_name;
+                return {...scrape, shopName};
             } else if (result.has_search_url === true) {
                 //use playwright to search for the card and LLM to parse the listings
                 let scrape = searchURLScrape(url, cardIdentifier, tcg, tcgAbbr, color, result.search_url);
@@ -228,7 +241,7 @@ HTML: `;
     }
 }
 
-async function searchURLScrape(url, cardIdentifier, tcg, tcgAbbr, color, searchURL) {
+async function searchURLScrape(url, cardIdentifier, tcg, tcgAbbr, color, searchURL) : Promise<object> {
     if (color !== "") {
         cardIdentifier = cardIdentifier + "-" + color;
     }
