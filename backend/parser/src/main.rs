@@ -59,8 +59,8 @@ fn main() -> Result<(), Error> {
             && x.title.to_lowercase().contains("singles")
     });
     loop {
-        let mut json_string: ProductResponse = if collections.collections.len() == 0 { client
-                .request(
+        let mut json_string: ProductResponse = if collections.collections.len() == 0 { 
+            client.request(
                     Method::GET,
                     "".to_owned()
                         + &args[1]
@@ -71,9 +71,9 @@ fn main() -> Result<(), Error> {
                 .send()
                 .expect("Failed to send request")
                 .json::<ProductResponse>()
-                .expect("Failed to parse json");
-        } else { client
-                .request(
+                .expect("Failed to parse json")
+        } else { 
+            client.request(
                     Method::GET,
                     "".to_owned()
                         + &args[1]
@@ -86,7 +86,7 @@ fn main() -> Result<(), Error> {
                 .send()
                 .expect("Failed to send request")
                 .json::<ProductResponse>()
-                .expect("Failed to parse json");
+                .expect("Failed to parse json")
         };
         if json_string.products.len() == 0 {
             break;
