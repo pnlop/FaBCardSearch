@@ -4,7 +4,11 @@ import { Text } from "@mantine/core";
 
 const ListingTableView = (listings) => {
     if (!listings) {
-        return null;
+        return (
+            <div>
+            <Text size="xl" fw={700}>No results found, please try again.</Text>
+            </div>
+        );
     }
     console.log("list: " + JSON.stringify(listings));
     console.log(JSON.parse(listings.listings.listings));

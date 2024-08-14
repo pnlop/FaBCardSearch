@@ -1,11 +1,15 @@
 // src/ListingTable.js
-import { Anchor, Card, Table } from "@mantine/core";
+import { Anchor, Card, Table, Text } from "@mantine/core";
 import React from "react";
 import "./ListingTable.css";
 //turn listing table into dynamic table generator per store, iterate over stores/listings in wrapper component
 const ListingTable = ({listing, url}) => {
   if (!listing || !listing.variants[0].available) {
-    return null;
+    return (
+      <Card>
+        <Text size="lg">No Results found</Text>
+      </Card>
+    );
   }
   console.log("listing: " + JSON.stringify(listing));
   console.log("URL: "+JSON.stringify(url));
