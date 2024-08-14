@@ -8,7 +8,7 @@ const ListingTableView = (listings) => {
     }
     console.log("list: " + JSON.stringify(listings));
     console.log(JSON.parse(listings.listings.listings));
-    let url = listings.listings.url;
+    let url = listings.listings.listings.url;
     return (
         <div className="listing-table-view">
             <Text size="xl" fw={700}>{listings.listings.shopName}</Text>
