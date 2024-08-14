@@ -64,7 +64,7 @@ fn main() -> Result<(), Error> {
     }
     collections.retain(|x| {
         (x.title.to_lowercase().contains(&args[3]) || x.title.to_lowercase().contains(&args[4]))
-            && x.title.to_lowercase().contains("singles" || x.title.to_lowercase)
+            && x.title.to_lowercase().contains("singles")
         });
     page = 1;
     loop {
