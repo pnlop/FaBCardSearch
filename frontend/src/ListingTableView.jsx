@@ -8,11 +8,12 @@ const ListingTableView = (listings) => {
     }
     console.log("list: " + JSON.stringify(listings));
     console.log(JSON.parse(listings.listings.listings));
+    let url = listings.listings.url;
     return (
         <div className="listing-table-view">
             <Text size="xl" fw={700}>{listings.listings.shopName}</Text>
             {JSON.parse(listings.listings.listings).map(listing => (
-            <ListingTable listing={listing} url={listings.listings.url}/>
+            <ListingTable listing={listing} url={url}/>
         ))}
         </div>
     );
