@@ -91,7 +91,7 @@ async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr, color ) {
 }
 
 async function shopifyScrape(url, cardIdentifier, tcg, tcgAbbr, color) : Promise<object> {
-       let proc = execFile("/home/admin/apps/FaBCardSearch/backend/parser/target/release/parser", [url, cardIdentifier, tcg, tcgAbbr, color]);
+       let proc = execFile("/home/admin/apps/FaBCardSearch/frontend/functions/parser/target/release/parser", [url, cardIdentifier, tcg, tcgAbbr, color]);
          let output = "";
             let error = "";
             proc.stdout.on('data', (data) => {
