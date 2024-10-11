@@ -44,52 +44,74 @@ fn main() -> Result<(), Error> {
     let mut products: Vec<Product> = Vec::new();
     let mut page = 1;
     let title_lower = &args[2].to_lowercase();
-    let mut collections: CollectionResponse = client
-        .request(
-            Method::GET,
-            "".to_owned() + &args[1] + "collections.json?limit=250",
-        )
-        .header(USER_AGENT, user_agent.random())
-        .send()
-        .expect("Failed to send request")
-        .json::<CollectionResponse>()
-        .expect("Failed to parse json");
-    collections.collections.retain(|x| {
-        (x.title.to_lowercase().contains(&args[3]) || x.title.to_lowercase().contains(&args[4]))
-            && x.title.to_lowercase().contains("singles")
-    });
+    let mut collections: Vec<Collection> = Vec::new();
     loop {
-        let mut json_string: ProductResponse = client
+        let collection: CollectionResponse = client
             .request(
                 Method::GET,
-                "".to_owned()
-                    + &args[1]
-                    + "collections/"
-                    + collections.collections[0].handle.as_str()
-                    + "/products.json?limit=250&page="
-                    + &page.to_string(),
+                "".to_owned() + &args[1] + "collections.json?limit=250&page=" + &page.to_string(),
             )
             .header(USER_AGENT, user_agent.random())
             .send()
             .expect("Failed to send request")
-            .json::<ProductResponse>()
+            .json::<CollectionResponse>()
             .expect("Failed to parse json");
+        if collection.collections.len() == 0 {
+            break;
+        }
+        page += 1;
+        collections.extend(collection.collections);
+    }
+    collections.retain(|x| {
+        (x.title.to_lowercase().contains(&args[3]) || x.title.to_lowercase().contains(&args[4]))
+            && x.title.to_lowercase().contains("singles")
+        });
+    page = 1;
+    loop {
+        let json_string: ProductResponse = if collections.len() == 0 { 
+            client.request(
+                    Method::GET,
+                    "".to_owned()
+                        + &args[1]
+                        + "products.json?limit=250&page="
+                        + &page.to_string(),
+                )
+                .header(USER_AGENT, user_agent.random())
+                .send()
+                .expect("Failed to send request")
+                .json::<ProductResponse>()
+                .expect("Failed to parse json")
+        } else { 
+            client.request(
+                    Method::GET,
+                    "".to_owned()
+                        + &args[1]
+                        + "collections/"
+                        + collections[0].handle.as_str()
+                        + "/products.json?limit=250&page="
+                        + &page.to_string(),
+                )
+                .header(USER_AGENT, user_agent.random())
+                .send()
+                .expect("Failed to send request")
+                .json::<ProductResponse>()
+                .expect("Failed to parse json")
+        };
         if json_string.products.len() == 0 {
             break;
         }
         page += 1;
-        if &args[4] == "fab" && args.len() > 5 {
-            json_string.products.retain(|x| {
-                x.title.to_lowercase().contains(title_lower)
-                    && (x.title.to_lowercase().contains(&args[5])
-                        || no_color(&x.title.to_lowercase()))
-            });
-        } else {
-            json_string
-                .products
-                .retain(|x| x.title.to_lowercase().contains(title_lower));
-        }
         products.extend(json_string.products);
+    }
+    if &args[4] == "fab" && args.len() > 5 {
+        products.retain(|x| {
+            x.title.to_lowercase().contains(title_lower)
+                && (x.title.to_lowercase().contains(&args[5])
+                    || no_color(&x.title.to_lowercase()))
+        });
+    } else {
+        products
+            .retain(|x| x.title.to_lowercase().contains(title_lower));
     }
     return io::stdout().write_all(&sonic_rs::to_vec(&products)?);
 }

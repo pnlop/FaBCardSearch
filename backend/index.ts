@@ -131,6 +131,7 @@ async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr, color ) {
             console.log("Query: "+ JSON.stringify(query));
             const result = await shops.findOne(query);
             console.log("Query: "+ JSON.stringify(result));
+
             if (result === null)  {
                 //try shopify request
                 let response = await axios.get(url+"collections.json");
@@ -138,11 +139,13 @@ async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr, color ) {
                     shops.insertOne({store_name: new URL(url).hostname, store_url:new URL(url).hostname, parsable:true, shopify:true, has_search_url: false, fab: false, mtg: false, search_url:""});
                     let scrape = await shopifyScrape(url, cardIdentifier, tcg, tcgAbbr, color);
                     let shopName = result.shop_name === "PLACEHOLDER" ? url : result.shop_name;
+
                     return {...scrape, shopName};
                 } else {
                     //no result for this shop, use playwright
                     let scrape = playwrightScrape(url, cardIdentifier, tcg, tcgAbbr, color);
                     let shopName = result.shop_name === "PLACEHOLDER" ? url : result.shop_name;
+
                     return {...scrape, shopName};
                 }
             } else if (result.parsable === "false") {
@@ -152,16 +155,19 @@ async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr, color ) {
                 //use the Rust parser
                 let scrape = await shopifyScrape(url, cardIdentifier, tcg, tcgAbbr, color);
                 let shopName = result.shop_name === "PLACEHOLDER" ? url : result.shop_name;
+
                 return {...scrape, shopName};
             } else if (result.has_search_url === true) {
                 //use playwright to search for the card and LLM to parse the listings
                 let scrape = searchURLScrape(url, cardIdentifier, tcg, tcgAbbr, color, result.search_url);
                 let shopName = result.shop_name === "PLACEHOLDER" ? url : result.shop_name;
+
                 return {...scrape, shopName};
             } else {
                 //use playwright to scrape the listings
                 let scrape = playwrightScrape(url, cardIdentifier, tcg, tcgAbbr, color);
                 let shopName = result.shop_name === "PLACEHOLDER" ? url : result.shop_name;
+
                 return {...scrape, shopName};
             }
         }));
@@ -234,6 +240,7 @@ HTML: `;
         console.log(result.response.text());
         console.log(JSON.parse(result.response.text()));
         return {listings: result.response.text(), url: url};
+
     } catch (error) {
         console.error('Error scraping site:', url, error);
     } finally {
@@ -268,6 +275,7 @@ HTML: `;
     console.log(result.response.text());
     console.log(JSON.parse(result.response.text()));
     return {listings: result.response.text(), url: url};
+
 }
 
 

@@ -4,17 +4,21 @@ import { Text } from "@mantine/core";
 
 const ListingTableView = (listings) => {
     if (!listings) {
-        return null;
+        return (
+            <div>
+            <Text size="xl" fw={700}>No results found, please try again.</Text>
+            </div>
+        );
     }
     console.log("list: " + JSON.stringify(listings));
-    let myUrl = listings.listings.url;
-    console.log(myUrl);
     console.log(JSON.parse(listings.listings.listings));
+    let myurl = listings.listings.url;
+    console.log(myurl);
     return (
         <div className="listing-table-view">
             <Text order={3}>{listings.listings.shopName}</Text>
             {JSON.parse(listings.listings.listings).map(listing => (
-            <ListingTable listing={listing} url={myUrl} />
+            <ListingTable listing={listing} url={myurl}/>
         ))}
         </div>
     );
