@@ -1,103 +1,16 @@
-import express from "express";
-import cors from "cors";
-import Search from "@flesh-and-blood/search";
-import { DoubleSidedCard } from "@flesh-and-blood/types";
-import { cards } from "@flesh-and-blood/cards";
-import bodyParser from "body-parser";
-import { execFile, spawn } from "child_process";
 import axios from "axios";
-import { chromium } from 'playwright';
-import loki from 'lokijs';
+import { execFile } from "child_process";
 import { MongoClient } from 'mongodb';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { ok } from "assert";
+import { chromium } from 'playwright';
 
-// with this new architecture, we will leverage MongoDB to store website information for more efficient parsing
-// the schema will be as follows:
-// {
-//     "name": "Card Kingdom",
-//     "url": "https://www.cardkingdom.com",
-//     "parsable": "true",
-//     "hasSearchURL": "true",
-//     "searchURL": "https://www.cardkingdom.com/catalog/search?search=",
-//     "isShopify": "false",
-//     "hasFAB": "false",
-//     "hasMTG": "true"
-// }
-// the existing Rust parser will be used to parse FaB data from the websites using Shopify backends
-// the new parser will ideally be used to parse all other websites
-// the new parser will be written in TypeScript and use Playwright for scraping
-// the new parser will use Playwright (or the stored search URL) to search for the card and then scrape the listings
-// the listings HTML will be passed to an LLM model to extract the relevant information as structured JSON
-// the structured JSON will be returned to the frontend for display
-
-const app = express();
-app.use(bodyParser.json());
-app.use(cors());
-
-app.listen(3000, () => {
-    console.log('Server running on port 3000');
-});
 
 const client = new MongoClient(process.env.URI);
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
 
-
-
-
-app.post('/api/searchCard', (req, res) => {
-    const searchQuery = req.body;
-    //from @flesh-and-blood/search search.tests.ts
-    const doubleSidedCards: DoubleSidedCard[] = cards.map((card) => {
-        if (card.oppositeSideCardIdentifier) {
-            const oppositeSideCard = cards.find(
-                ({ cardIdentifier }) => cardIdentifier === card.oppositeSideCardIdentifier
-            );
-            if (oppositeSideCard) {
-
-                (card as DoubleSidedCard).oppositeSideCard = oppositeSideCard;
-            }
-        }
-        return card;
-    });
-
-    const search = new Search(doubleSidedCards);
-    const searchResults = search.search(searchQuery.query);
-
-    res.contentType('application/json')
-    res.send(JSON.stringify(searchResults, function(key, value) {
-        if(key == 'oppositeSideCard') { 
-          return "Double Sided Card (broken behaviour)";
-        } else {
-          return value;
-        };
-      }));
-
-});
-
-async function ExecuteRequest(query, page): Promise<[]> {
-    let response = await axios.get('https://api.scryfall.com/cards/search?page='+page+'&q='+query);
-    let data = response.data;
-    //if (response.data.has_more === true) {
-    //    return data.concat(await ExecuteRequest(query, page++));
-    //} else {
-        return data;
-    //}
-}
-
-app.post('/api/searchCardMTG', (req, res) => {
-    const searchQuery = req.body;
-    ExecuteRequest(searchQuery.query, 1).then((searchResults) => {
-        console.log(searchResults);
-        res.contentType('application/json');
-        res.send(searchResults);
-    });
-});
-
-
-
-app.post('/api/searchListings', (req, res) => {
+export function onRequest(context) {
+    const req = context.request;
     const requestData = req.body;
     const cardData = requestData.cardData;
     const storeUrls = requestData.storeUrls;
@@ -114,11 +27,10 @@ app.post('/api/searchListings', (req, res) => {
         }
     }
     scrapeSite(storeUrls, cardData.name, tcg, tcgAbbr, color).then((results) => {
-        res.contentType('application/json');
-        res.send(results);
+        return Response.json(results)
     });
 
-});
+}
 
 async function scrapeSite(urls, cardIdentifier, tcg, tcgAbbr, color ) {
     // Perform scraping for each URL
