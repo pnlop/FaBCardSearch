@@ -1,3 +1,7 @@
+use fake_useragent::UserAgents;
+use reqwest::blocking::Client;
+use reqwest::header::USER_AGENT;
+use reqwest::Method;
 use sonic_rs::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 
@@ -124,7 +128,7 @@ pub fn parse(shopify: &str, argsproduct: &str, argscollection: &str, argscollect
         products
             .retain(|x| x.title.to_lowercase().contains(&title_lower));
     }
-    return &sonic_rs::to_vec(&products)?.into();
+    return &sonic_rs::to_string(&products);
 }
 
 fn no_color(title: &str) -> bool {
