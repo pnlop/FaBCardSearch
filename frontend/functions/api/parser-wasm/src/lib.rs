@@ -1,3 +1,18 @@
+extern crate reqwest;
+extern crate sonic_rs;
+extern crate fake_useragent;
+extern crate wasm_bindgen;
+
+
+use fake_useragent::UserAgents;
+use reqwest::blocking::Client;
+use reqwest::header::USER_AGENT;
+use reqwest::Method;
+use sonic_rs::{Deserialize, Serialize};
+use std::env;
+use std::io::{self, Error, Write};
+use wasm_bindgen::prelude::*;
+
 pub fn add(left: u64, right: u64) -> u64 {
     left + right
 }
@@ -13,14 +28,6 @@ mod tests {
     }
 }
 
-use fake_useragent::UserAgents;
-use reqwest::blocking::Client;
-use reqwest::header::USER_AGENT;
-use reqwest::Method;
-use sonic_rs::{Deserialize, Serialize};
-use std::env;
-use std::io::{self, Error, Write};
-use wasm_bindgen::prelude::*;
 
 
 #[derive(Serialize, Deserialize)]
@@ -121,13 +128,13 @@ fn parse(shopify: &str, argsproduct: &str, argscollection: &str, argscollectiona
     }
     if argscollectionabr == "fab" && argscolor != "NIL" {
         products.retain(|x| {
-            x.title.to_lowercase().contains(title_lower)
-                && (x.title.to_lowercase().contains(argscolor])
+            x.title.to_lowercase().contains(&title_lower)
+                && (x.title.to_lowercase().contains(argscolor)
                     || no_color(&x.title.to_lowercase()))
         });
     } else {
         products
-            .retain(|x| x.title.to_lowercase().contains(title_lower));
+            .retain(|x| x.title.to_lowercase().contains(&title_lower));
     }
     return &sonic_rs::to_vec(&products)?.into();
 }
