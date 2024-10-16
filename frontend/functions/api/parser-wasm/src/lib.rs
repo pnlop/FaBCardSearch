@@ -128,7 +128,10 @@ pub fn parse(shopify: &str, argsproduct: &str, argscollection: &str, argscollect
         products
             .retain(|x| x.title.to_lowercase().contains(&title_lower));
     }
-    return &sonic_rs::to_string(&products);
+    let json_result = &sonic_rs::to_string(&products) {
+        Err(e) => return "FAILED TO PARSE".into(),
+        Ok(r) => return r,
+    };
 }
 
 fn no_color(title: &str) -> bool {
