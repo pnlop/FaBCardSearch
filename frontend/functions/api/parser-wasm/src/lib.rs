@@ -128,8 +128,8 @@ pub fn parse(shopify: &str, argsproduct: &str, argscollection: &str, argscollect
         products
             .retain(|x| x.title.to_lowercase().contains(&title_lower));
     }
-    let json_result = match &sonic_rs::to_string(&products) {
-        Err(e) => return "FAILED TO PARSE".into(),
+    match sonic_rs::to_string(&products) {
+        Err(_e) => return "FAILED TO PARSE".into(),
         Ok(r) => return r,
     };
 }
