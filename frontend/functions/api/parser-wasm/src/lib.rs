@@ -1,16 +1,4 @@
-extern crate reqwest;
-extern crate sonic_rs;
-extern crate fake_useragent;
-extern crate wasm_bindgen;
-
-
-use fake_useragent::UserAgents;
-use reqwest::blocking::Client;
-use reqwest::header::USER_AGENT;
-use reqwest::Method;
 use sonic_rs::{Deserialize, Serialize};
-use std::env;
-use std::io::{self, Error, Write};
 use wasm_bindgen::prelude::*;
 
 pub fn add(left: u64, right: u64) -> u64 {
@@ -60,7 +48,7 @@ struct CollectionResponse {
 }
 
 #[wasm_bindgen]
-fn parse(shopify: &str, argsproduct: &str, argscollection: &str, argscollectionabr: &str, argscolor: &str) -> String {
+pub fn parse(shopify: &str, argsproduct: &str, argscollection: &str, argscollectionabr: &str, argscolor: &str) -> String {
     // all args must be lowercase
     let user_agent = UserAgents::new();
     let client = Client::builder().build().unwrap();
